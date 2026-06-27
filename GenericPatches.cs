@@ -98,7 +98,7 @@ namespace BalaurBohemianBroken {
 	// 	}
 	// }
 	
-	[HarmonyPatch(typeof(PlayerCamera), nameof(PlayerCamera.EndSequence))]
+    [HarmonyPatch]
 	public class EndScreenMovenext {
 		// Making this stuff static is really bad form for IEnumerators usually.
 		// Often there will be multiple of them, and they'll conflict!
@@ -113,6 +113,7 @@ namespace BalaurBohemianBroken {
 		// How IEnumerator is working here is a total mystery to me.
 		// I never assing to __result yet it does overwrite it
 		[HarmonyPostfix]
+		[HarmonyPatch(typeof(PlayerCamera), nameof(PlayerCamera.EndSequence))]
 		public static IEnumerator BalaurEndSequence(IEnumerator __result, PlayerCamera __instance, int type) {
 			BepInEx.Logging.Logger.CreateLogSource("ExpandedDeathReports.Patches").LogInfo("Running custom end screen");
 		    if (type == 0)

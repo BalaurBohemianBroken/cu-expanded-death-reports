@@ -16,7 +16,8 @@ namespace BalaurBohemianBroken {
 
         protected abstract List<string> notes { get; }
         
-        public string Serialize() {
+        public virtual string Serialize() {
+            LoadFromStatic();
             try {
                 return JsonConvert.SerializeObject(value);
             }
@@ -26,7 +27,7 @@ namespace BalaurBohemianBroken {
             }
         }
         
-        public void Deserialize(string serialized) {
+        public virtual void Deserialize(string serialized) {
             try {
                 value = JsonConvert.DeserializeObject<T>(serialized);
             }
@@ -36,8 +37,12 @@ namespace BalaurBohemianBroken {
             }
         }
         
-        protected void LoadFromStatic() {
+        protected virtual void LoadFromStatic() {
             value = value_running;
+        }
+
+        public virtual void LoadToStatic() {
+            value_running = value;
         }
 
         public abstract bool IsNoteworthy();

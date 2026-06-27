@@ -8,5 +8,7 @@ namespace BalaurBohemianBroken {
         public string name { get; }
 
         public bool IsNoteworthy();
+
+        public void LoadToStatic();
     }
 }

@@ -1,27 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using BalaurBohemianBroken.StatTrackers;
 using UnityEngine;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using Newtonsoft.Json;
 
 // TODO: Option to remove old reports, "burn" them
 // TODO: Post-it notes for the 'special' report features.
+// TODO: Add support for multiple save locations. See how Jimmy modifies it.
 namespace BalaurBohemianBroken {
     [BepInPlugin("yip.balaur.ExpandedDeathReports", "ExpandedDeathReports", "1.0.0")]
     public class ExpandedDeathReports : BaseUnityPlugin {
         public static ManualLogSource logger;
         // Based on the game's SaveSystem.SaveGame function.
-        public static string save_path = Application.persistentDataPath + "\\death_reports.yip";
+        public static string save_path_stats = Application.persistentDataPath + "\\death_reports.yip";
+        public static string save_path_ongoing = Application.persistentDataPath + "\\ongoing_run.yip";
 
-        public static Dictionary<string, IStat> main_stat_trackers = new Dictionary<string, IStat>();
-        public static Dictionary<string, IStat> special_stat_trackers = new Dictionary<string, IStat>();
+        public static Dictionary<string, IStat> stat_trackers = new Dictionary<string, IStat>();
         
         public void Awake() {
             logger = Logger;
-            var h = new Harmony("yip.balaur.ExpandedDeathReports");
-            h.PatchAll();
+            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
 
             FillStatTrackers();
         }
@@ -40,19 +43,37 @@ namespace BalaurBohemianBroken {
                 new PainSufferedTotal()
             };
 
-            main_stat_trackers = new Dictionary<string, IStat>();
-            special_stat_trackers = new Dictionary<string, IStat>();
+            stat_trackers = new Dictionary<string, IStat>();
             foreach (IStat stat in main_stat_tracker_list) {
-                main_stat_trackers[stat.name] = stat;
-            }
-            foreach (IStat stat in special_stat_tracker_list) {
-                special_stat_trackers[stat.name] = stat;
+                stat_trackers[stat.name] = stat;
             }
         }
 
         // Save the list of currently running IStats out to a dictionary
         public void SaveRunning() {
-            throw new NotImplementedException();
+            Dictionary<string, string> stat_data = new Dictionary<string, string>();
+            foreach (KeyValuePair<string, IStat> kvp in stat_trackers) {
+                stat_data[kvp.Key] = kvp.Value.Serialize();
+            }
+            string save_data = JsonConvert.SerializeObject(stat_data, Formatting.None, new JsonSerializerSettings());
+            File.WriteAllBytes(save_path_ongoing, SaveSystem.Zip(save_data));
+        }
+
+        public void LoadRunning() {
+            if (!File.Exists(save_path_ongoing)) {
+                return;
+            }
+
+            string raw_data = SaveSystem.Unzip(File.ReadAllBytes(save_path_ongoing));
+            Dictionary<string, string> saved_data = JsonConvert.DeserializeObject<Dictionary<string, string>>(raw_data);
+            
+            foreach (KeyValuePair<string, IStat> kvp in stat_trackers) {
+                // TODO: Some kind of logging here for when a key isn't found. Probably just warning.
+                if (saved_data.TryGetValue(kvp.Key, out string object_data)) {
+                    kvp.Value.Deserialize(object_data);
+                    kvp.Value.LoadToStatic();
+                }
+            }
         }
 
         public static bool IsMainBody(Body body) {

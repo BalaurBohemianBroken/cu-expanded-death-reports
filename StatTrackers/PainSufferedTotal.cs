@@ -6,6 +6,7 @@ using System.Globalization;
 using Newtonsoft.Json;
 
 namespace BalaurBohemianBroken.StatTrackers {
+    [HarmonyPatch]
     public class PainSufferedTotal : StatGeneric<float> {
         public override string name => "PainSufferedTotal";
         public override int priority => 0;

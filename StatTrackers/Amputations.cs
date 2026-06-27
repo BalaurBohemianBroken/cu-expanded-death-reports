@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Collections.Generic;
 
 namespace BalaurBohemianBroken.StatTrackers {
+    [HarmonyPatch]
     public class Amputations : StatGeneric<int> {
         public override string name => "CutLimbsOff";
         public override int priority => 0;

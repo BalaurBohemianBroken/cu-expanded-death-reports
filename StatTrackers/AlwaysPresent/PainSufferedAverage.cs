@@ -3,11 +3,14 @@ using BepInEx;
 using HarmonyLib;
 using UnityEngine;
 using System.Reflection;
+using Newtonsoft.Json;
 
 namespace BalaurBohemianBroken.StatTrackers {
+    [HarmonyPatch]
     public class PainSufferedAverage : StatGeneric<float> {
         public override string name => "PainSufferedAverage";
         public override int priority => 0;
+        private float deltatime = 0;
         public static float deltatime_running = 0;
 
         private const float update_interval = 1;
@@ -36,6 +39,43 @@ namespace BalaurBohemianBroken.StatTrackers {
 
         public static float GetAveragePainRunning() {
             return value_running / deltatime_running;
+        }
+
+        public override void LoadToStatic() {
+            value_running = value;
+            deltatime_running = deltatime;
+        }
+
+        protected override void LoadFromStatic() {
+            value = value_running;
+            deltatime_running = deltatime;
+        }
+        
+        public override string Serialize() {
+            LoadFromStatic();
+            try {
+                Dictionary<string, string> data = new Dictionary<string, string>() {
+                    {"value", JsonConvert.SerializeObject(value)},
+                    {"deltatime", JsonConvert.SerializeObject(deltatime)},
+                };
+                return JsonConvert.SerializeObject(data);
+            }
+            catch (JsonException) {
+                ExpandedDeathReports.logger.LogWarning($"Failed to serialize object.\nName: {name}\nValue: {value}");
+                throw;
+            }
+        }
+        
+        public override void Deserialize(string serialized) {
+            try {
+                var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(serialized);
+                value = JsonConvert.DeserializeObject<float>(data["value"]);
+                deltatime = JsonConvert.DeserializeObject<float>(data["deltatime"]);
+            }
+            catch (JsonException) {
+                ExpandedDeathReports.logger.LogWarning($"Failed to deserialize object.\nName: {name}\nSerialization string: {serialized}");
+                throw;
+            }
         }
     }
 }

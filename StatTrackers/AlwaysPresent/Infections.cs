@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Reflection;
 
 namespace BalaurBohemianBroken.StatTrackers {
+    [HarmonyPatch]
     public class Infections : StatGeneric<int> {
         public override string name => "Infections";
         public override int priority => 0;

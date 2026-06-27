@@ -3,6 +3,7 @@ using HarmonyLib;
 using UnityEngine;
 
 namespace BalaurBohemianBroken.StatTrackers {
+    [HarmonyPatch]
     public class FluidsConsumedStat : StatGeneric<float> {
         public override string name => "FluidsConsumed";
         public override int priority => 0;
