@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using BalaurBohemianBroken.StatTrackers;
 using UnityEngine;
 using BepInEx;
+using BepInEx.Logging;
 using HarmonyLib;
 
 // TODO: Option to remove old reports, "burn" them
@@ -8,11 +11,54 @@ using HarmonyLib;
 namespace BalaurBohemianBroken {
     [BepInPlugin("yip.balaur.ExpandedDeathReports", "ExpandedDeathReports", "1.0.0")]
     public class ExpandedDeathReports : BaseUnityPlugin {
+        public static ManualLogSource logger;
+        // Based on the game's SaveSystem.SaveGame function.
+        public static string save_path = Application.persistentDataPath + "\\death_reports.yip";
+
+        public static Dictionary<string, IStat> main_stat_trackers = new Dictionary<string, IStat>();
+        public static Dictionary<string, IStat> special_stat_trackers = new Dictionary<string, IStat>();
+        
         public void Awake() {
+            logger = Logger;
             var h = new Harmony("yip.balaur.ExpandedDeathReports");
             h.PatchAll();
+
+            FillStatTrackers();
         }
-        
+
+        public static void FillStatTrackers() {
+            List<IStat> main_stat_tracker_list = new List<IStat>() {
+                new BonesFractured(),
+                new Dislocations(),
+                new FluidsConsumedStat(),
+                new Infections(),
+                new PainSufferedAverage(),
+            };
+            List<IStat> special_stat_tracker_list = new List<IStat>() {
+                new Amputations(),
+                new BulletsFired(),
+                new PainSufferedTotal()
+            };
+
+            main_stat_trackers = new Dictionary<string, IStat>();
+            special_stat_trackers = new Dictionary<string, IStat>();
+            foreach (IStat stat in main_stat_tracker_list) {
+                main_stat_trackers[stat.name] = stat;
+            }
+            foreach (IStat stat in special_stat_tracker_list) {
+                special_stat_trackers[stat.name] = stat;
+            }
+        }
+
+        // Save the list of currently running IStats out to a dictionary
+        public void SaveRunning() {
+            throw new NotImplementedException();
+        }
+
+        public static bool IsMainBody(Body body) {
+            // This is placed for multiplayer compatibility. Maybe. Idk how multiplayer works right now, just assuming.
+            return PlayerCamera.main.body == body;
+        }
     }
 
     public class DeathReport {
@@ -88,6 +134,31 @@ namespace BalaurBohemianBroken {
         // A third subject has consumed a light bulb. Tests have shown they do not prefer the taste of glass or bulb related materials to dog food. Further study needed.
         // A fourth subject has consumed a light bulb. Recommendations were suggested to teach them to place the small part in their mouth instead. However, we are not wasting resources on this.
         // Subjects continue to consume light bulbs at an alarming rate. This goes against basic survival instinct and calls into question our neural sequencing. Recommended we do not record this further.
+        
+        // Things to fit in:
+        // longest distance fallen with no damage
+        // longest distance with damage
+        // traps destroyed
+        // brain damag
+        // bandages used
+        // chest drains used
+        // ores mined
+        // 
+        // suffered stroke
+        // survived stroke
+        // restarted heart
+        // triggered multiple landmines
+        // shot multiple times
+        // killed salad
+        // killed traders
+        // eaten by dune
+        // made exclusive recipes
+        // listened to music
+        // very long run
+        // epdas read
+        // suffered significant disfiguration
+        // 
+        // prosthetics added
         public int run_num;
         public int depth;
         public int calories;
@@ -109,7 +180,7 @@ namespace BalaurBohemianBroken {
         
         public int pain_suffered;  // Poor thing...
 
-        public int bones_fractured;
+        public int dislocations;
         public int bones_broken;
         
         public int opened_cuts;

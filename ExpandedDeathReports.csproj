@@ -2,19 +2,24 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
         <RootNamespace>BalaurBohemianBroken</RootNamespace>
+        <LangVersion>8</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" />
       <Reference Include="0Harmony">
         <HintPath>..\..\..\..\..\..\home\will\.local\share\Steam\steamapps\common\Casualties Unknown Demo\BepInEx\core\0Harmony.dll</HintPath>
       </Reference>
-      <Reference Include="Assembly-CSharp">
+      <Reference Include="Assembly-CSharp" Publicize="true">
         <HintPath>..\..\..\..\..\..\home\will\.local\share\Steam\steamapps\common\Casualties Unknown Demo\CasualtiesUnknown_Data\Managed\Assembly-CSharp.dll</HintPath>
       </Reference>
       <Reference Include="BepInEx">
         <HintPath>..\..\..\..\..\..\home\will\.local\share\Steam\steamapps\common\Casualties Unknown Demo\BepInEx\core\BepInEx.dll</HintPath>
+      </Reference>
+      <Reference Include="Newtonsoft.Json">
+        <HintPath>..\..\..\..\..\..\home\will\.local\share\Steam\steamapps\common\Casualties Unknown Demo\CasualtiesUnknown_Data\Managed\Newtonsoft.Json.dll</HintPath>
       </Reference>
       <Reference Include="Unity.TextMeshPro">
         <HintPath>..\..\..\..\..\..\home\will\.local\share\Steam\steamapps\common\Casualties Unknown Demo\CasualtiesUnknown_Data\Managed\Unity.TextMeshPro.dll</HintPath>
@@ -40,7 +45,7 @@
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="cp &quot;/mnt/NASPrivate/Work/Programming/CasualtiesUnknown/DeathReportHistory/bin/Debug/netstandard2.1/DeathReportHistory.dll&quot; &quot;/home/will/.local/share/Steam/steamapps/common/Casualties Unknown Demo/BepInEx/plugins/DeathReportHistory.dll&quot;" />
+      <Exec Command="cp &quot;/mnt/NASPrivate/Work/Programming/CasualtiesUnknown/ExpandedDeathReports/bin/Debug/netstandard2.1/ExpandedDeathReports.dll&quot; &quot;/home/will/.local/share/Steam/steamapps/common/Casualties Unknown Demo/BepInEx/plugins/ExpandedDeathReports.dll&quot;" />
     </Target>
 
 </Project>
