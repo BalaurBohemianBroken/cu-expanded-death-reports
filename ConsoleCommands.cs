@@ -19,12 +19,12 @@ namespace BalaurBohemianBroken {
                 return;
             }
 
-            if (!ExpandedDeathReports.stat_trackers.TryGetValue(args[1], out IStat tracker)) {
+            if (!ExpandedDeathReports.stat_trackers_all.TryGetValue(args[1], out IStat tracker)) {
                 instance.LogToConsole($"Cannot find tracker named {args[1]}.");
                 return;
             }
 
-            instance.LogToConsole(tracker.Serialize());
+            instance.LogToConsole($"{args[1]}: {tracker.Serialize()}");
         }
     }
 }

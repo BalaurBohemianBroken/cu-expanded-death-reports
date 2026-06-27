@@ -20,7 +20,10 @@ namespace BalaurBohemianBroken {
         public static string save_path_stats = Application.persistentDataPath + "\\death_reports.yip";
         public static string save_path_ongoing = Application.persistentDataPath + "\\ongoing_run.yip";
 
-        public static Dictionary<string, IStat> stat_trackers = new Dictionary<string, IStat>();
+        public static Dictionary<string, IStat> stat_trackers_boring = new Dictionary<string, IStat>();
+        public static Dictionary<string, IStat> stat_trackers_special = new Dictionary<string, IStat>();
+        // Originally made this a property with just get, but FillStatTrackers is the only thing that should modify this.
+        public static Dictionary<string, IStat> stat_trackers_all = new Dictionary<string, IStat>();
         
         public void Awake() {
             logger = Logger;
@@ -43,16 +46,24 @@ namespace BalaurBohemianBroken {
                 new PainSufferedTotal()
             };
 
-            stat_trackers = new Dictionary<string, IStat>();
+            stat_trackers_all = new Dictionary<string, IStat>();
+            stat_trackers_boring = new Dictionary<string, IStat>();
             foreach (IStat stat in main_stat_tracker_list) {
-                stat_trackers[stat.name] = stat;
+                stat_trackers_boring[stat.name] = stat;
+                stat_trackers_all[stat.name] = stat;
+            }
+
+            stat_trackers_special = new Dictionary<string, IStat>();
+            foreach (IStat stat in special_stat_tracker_list) {
+                stat_trackers_special[stat.name] = stat;
+                stat_trackers_all[stat.name] = stat;
             }
         }
 
         // Save the list of currently running IStats out to a dictionary
         public void SaveRunning() {
             Dictionary<string, string> stat_data = new Dictionary<string, string>();
-            foreach (KeyValuePair<string, IStat> kvp in stat_trackers) {
+            foreach (KeyValuePair<string, IStat> kvp in stat_trackers_all) {
                 stat_data[kvp.Key] = kvp.Value.Serialize();
             }
             string save_data = JsonConvert.SerializeObject(stat_data, Formatting.None, new JsonSerializerSettings());
@@ -67,7 +78,7 @@ namespace BalaurBohemianBroken {
             string raw_data = SaveSystem.Unzip(File.ReadAllBytes(save_path_ongoing));
             Dictionary<string, string> saved_data = JsonConvert.DeserializeObject<Dictionary<string, string>>(raw_data);
             
-            foreach (KeyValuePair<string, IStat> kvp in stat_trackers) {
+            foreach (KeyValuePair<string, IStat> kvp in stat_trackers_all) {
                 // TODO: Some kind of logging here for when a key isn't found. Probably just warning.
                 if (saved_data.TryGetValue(kvp.Key, out string object_data)) {
                     kvp.Value.Deserialize(object_data);
@@ -134,6 +145,7 @@ namespace BalaurBohemianBroken {
         // DESTRUCTION: things_destroyed
         
         // Special behaviours:
+        // Self harm performed.
         // Operator received a phone call. Experiment ended prematurely.
         // Operator decided experiment was a __failure__. Experiment ended prematurely.
         // Operator decided to end shift early. Experiment ended prematurely.

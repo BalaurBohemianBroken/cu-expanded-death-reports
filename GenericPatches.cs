@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Reflection;
 using TMPro;
 using System;
+using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -103,43 +104,64 @@ namespace BalaurBohemianBroken {
 		// Making this stuff static is really bad form for IEnumerators usually.
 		// Often there will be multiple of them, and they'll conflict!
 		// But I don't think that's the case with this one.
-
-		// public static bool Prefix(int type, PlayerCamera __instance, ref IEnumerator __result) {
-		// 	BepInEx.Logging.Logger.CreateLogSource("ExpandedDeathReports.Patches").LogInfo("IEnumerator init patch");
-		// 	__result = BalaurEndSequence(__instance, type);
-		// 	return true;
-		// }
 		
 		// How IEnumerator is working here is a total mystery to me.
-		// I never assing to __result yet it does overwrite it
+		// I never assign to __result yet it does overwrite it
+		// Anyway, this effectively skips the existing method.
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(PlayerCamera), nameof(PlayerCamera.EndSequence))]
 		public static IEnumerator BalaurEndSequence(IEnumerator __result, PlayerCamera __instance, int type) {
 			BepInEx.Logging.Logger.CreateLogSource("ExpandedDeathReports.Patches").LogInfo("Running custom end screen");
-		    if (type == 0)
-		    {
+		    if (type == 0) {
+			    var stats = ExpandedDeathReports.stat_trackers_boring;
 				PlayerPrefs.SetInt("deathcount", PlayerPrefs.GetInt("deathcount") + 1);
 				__instance.endScreen.gameObject.SetActive(true);
-				__instance.endScreen.sprite = !__instance.body.inWater ? ((double) __instance.body.totalBleedSpeed <= 0.019999999552965164 ? __instance.deathScreenSprites[0] : __instance.deathScreenSprites[1]) : __instance.deathScreenSprites[2];
-				int num1 = Mathf.RoundToInt(__instance.body.AverageHappiness() * 0.1f);
-				__instance.deathStats.GetChild(0).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenstatus");
+				// TODO: Add stats that the game tracks to my stats: Time, depth, death count, calories, mental state. Death background?
+				SetEndBackground(__instance);
+				
+				int mental_state_integer = Mathf.RoundToInt(__instance.body.AverageHappiness() * 0.1f);
+				// Headers
+				__instance.deathStats.GetChild(0).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenstatus") + $"#{PlayerPrefs.GetInt("deathcount")}";
 				__instance.deathStats.GetChild(1).GetComponent<TextMeshProUGUI>().text = "2XXX-" + DateTime.Now.ToString("MM-dd-HH-mm-ss");
 				__instance.deathStats.GetChild(2).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenunresolved");
-				__instance.deathStats.GetChild(3).GetComponent<TextMeshProUGUI>().text = $"#{WoundView.specimenId.ToString()}-SAW-01";
-				__instance.deathStats.GetChild(4).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenphysical");
-				__instance.deathStats.GetChild(5).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreendeceased");
-				__instance.deathStats.GetChild(6).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenmental");
-				__instance.deathStats.GetChild(7).GetComponent<TextMeshProUGUI>().text = (Locale.GetOther("moodrange" + ((bool) (UnityEngine.Object) __instance.body.mindWipe ? (object) "wiped" : (object) num1)?.ToString()) + (__instance.body.succesfullyRolledLastStand ? Locale.GetOther("moodrangeyethopeful") : "")).ToUpper();
-				__instance.deathStats.GetChild(8).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreendepth");
-				TextMeshProUGUI component1 = __instance.deathStats.GetChild(9).GetComponent<TextMeshProUGUI>();
-				int depth = (int) WorldGeneration.world.PlayerTotalDepthMeters();
-				string str1 = depth + Locale.GetOther("endscreendepthres") + TimeSpan.FromSeconds((double) WorldGeneration.TotalRunTime()).ToString("hh\\:mm\\:ss");
-				component1.text = str1;
-				__instance.deathStats.GetChild(10).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreencalories");
-				__instance.deathStats.GetChild(11).GetComponent<TextMeshProUGUI>().text = $"{__instance.caloriesConsumed}cal";
-				__instance.deathStats.GetChild(12).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreencasualties");
-				TextMeshProUGUI cas_unknown = __instance.deathStats.GetChild(13).GetComponent<TextMeshProUGUI>();
-				cas_unknown.text = $"{Locale.GetOther("endscreenunknown")} + {PlayerPrefs.GetInt("deathcount")}";
+
+				float y_start = __instance.deathStats.GetChild(3).position.y;
+				float line_height = -35;// __instance.deathStats.GetChild(4).position.y - y_start;
+				List<TextMeshProUGUI> lines = new List<TextMeshProUGUI>();
+				
+				// Clear existing text objects and create my own.
+				for (int i = 4; i < 14; i++) {
+					UnityEngine.Object.Destroy(__instance.deathStats.GetChild(i).gameObject);
+				}
+				
+				Transform prefab_object = __instance.deathStats.GetChild(3);
+				Transform parent = prefab_object.parent;
+				for (int i = 4; i < 23; i++) {
+					Transform obj = UnityEngine.Object.Instantiate(prefab_object, parent);
+					Vector3 pos = obj.position;
+					pos.y += line_height * (i - 3);
+					obj.position = pos;
+					var tmp = obj.GetComponent<TextMeshProUGUI>();
+					tmp.text = "";
+					lines.Add(tmp);
+				}
+				
+				// __instance.deathStats.GetChild(3).GetComponent<TextMeshProUGUI>
+				// __instance.deathStats.GetChild(3).GetComponent<TextMeshProUGUI>().text = $"#{WoundView.specimenId.ToString()}-SAW-01";
+				// __instance.deathStats.GetChild(4).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenphysical");
+				// __instance.deathStats.GetChild(5).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreendeceased");
+				// __instance.deathStats.GetChild(6).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenmental");
+				// __instance.deathStats.GetChild(7).GetComponent<TextMeshProUGUI>().text = (Locale.GetOther("moodrange" + ((bool) (UnityEngine.Object) __instance.body.mindWipe ? (object) "wiped" : (object) mental_state_integer)?.ToString()) + (__instance.body.succesfullyRolledLastStand ? Locale.GetOther("moodrangeyethopeful") : "")).ToUpper();
+				// __instance.deathStats.GetChild(8).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreendepth");
+				// TextMeshProUGUI component1 = __instance.deathStats.GetChild(9).GetComponent<TextMeshProUGUI>();
+				// int depth = (int) WorldGeneration.world.PlayerTotalDepthMeters();
+				// string str1 = depth + Locale.GetOther("endscreendepthres") + TimeSpan.FromSeconds((double) WorldGeneration.TotalRunTime()).ToString("hh\\:mm\\:ss");
+				// component1.text = str1;
+				// __instance.deathStats.GetChild(10).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreencalories");
+				// __instance.deathStats.GetChild(11).GetComponent<TextMeshProUGUI>().text = $"{__instance.caloriesConsumed} KCAL, {stats["FluidsConsumed"].Serialize()} ML";
+				// __instance.deathStats.GetChild(12).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreencasualties");
+				// TextMeshProUGUI cas_unknown = __instance.deathStats.GetChild(13).GetComponent<TextMeshProUGUI>();
+				// cas_unknown.text = $"{Locale.GetOther("endscreenunknown")} + {PlayerPrefs.GetInt("deathcount")}";
 				// TODO: Neither of these are working. It's minor, and most people probably won't notice. But I should figure it out.
 				// __result.GetType().GetField("current").SetValue(__result, new WaitForSecondsRealtime(3.5f));
 				// yield return new WaitForSecondsRealtime(3.5f);
@@ -175,6 +197,18 @@ namespace BalaurBohemianBroken {
 		    }
 		    __instance.endScreen.gameObject.SetActive(true);
 		    yield return null;
+		}
+
+		public static void SetEndBackground(PlayerCamera __instance) {
+			// Drowned
+			if (__instance.body.inWater)
+				__instance.endScreen.sprite = __instance.deathScreenSprites[2];
+			// Bleeding
+			else if ((double)__instance.body.totalBleedSpeed <= 0.019999999552965164)
+				__instance.endScreen.sprite = __instance.deathScreenSprites[0];
+			// Normal
+			else
+				__instance.endScreen.sprite = __instance.deathScreenSprites[1];
 		}
 	}
 }
