@@ -101,9 +101,11 @@ namespace BalaurBohemianBroken {
 	
     [HarmonyPatch]
 	public class EndScreenMovenext {
-		// Making this stuff static is really bad form for IEnumerators usually.
-		// Often there will be multiple of them, and they'll conflict!
-		// But I don't think that's the case with this one.
+		// Originally tried to get distance between the first two lines using this, but it was wrong. So I manually found a value.
+		// __instance.deathStats.GetChild(4).position.y - y_start;
+		static float line_height = -36;
+		private static float font_mult = 0.6f;
+		private static string variable_color = "#5f1717";
 		
 		// How IEnumerator is working here is a total mystery to me.
 		// I never assign to __result yet it does overwrite it
@@ -121,23 +123,24 @@ namespace BalaurBohemianBroken {
 				
 				int mental_state_integer = Mathf.RoundToInt(__instance.body.AverageHappiness() * 0.1f);
 				// Headers
-				__instance.deathStats.GetChild(0).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenstatus") + $"#{PlayerPrefs.GetInt("deathcount")}";
+				var tm = __instance.deathStats.GetChild(0).GetComponent<TextMeshProUGUI>();
+				tm.richText = true;
+				tm.text = Locale.GetOther("endscreenstatus") + $"#{ColorVar(PlayerPrefs.GetInt("deathcount"))}";
 				__instance.deathStats.GetChild(1).GetComponent<TextMeshProUGUI>().text = "2XXX-" + DateTime.Now.ToString("MM-dd-HH-mm-ss");
 				__instance.deathStats.GetChild(2).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenunresolved");
 
-				float y_start = __instance.deathStats.GetChild(3).position.y;
-				float line_height = -35;// __instance.deathStats.GetChild(4).position.y - y_start;
+				Transform first_line = __instance.deathStats.GetChild(3);
+				float y_start = first_line.position.y;
 				List<TextMeshProUGUI> lines = new List<TextMeshProUGUI>();
+				lines.Add(first_line.GetComponent<TextMeshProUGUI>());
 				
 				// Clear existing text objects and create my own.
 				for (int i = 4; i < 14; i++) {
 					UnityEngine.Object.Destroy(__instance.deathStats.GetChild(i).gameObject);
 				}
 				
-				Transform prefab_object = __instance.deathStats.GetChild(3);
-				Transform parent = prefab_object.parent;
 				for (int i = 4; i < 23; i++) {
-					Transform obj = UnityEngine.Object.Instantiate(prefab_object, parent);
+					Transform obj = UnityEngine.Object.Instantiate(first_line, first_line.parent);
 					Vector3 pos = obj.position;
 					pos.y += line_height * (i - 3);
 					obj.position = pos;
@@ -145,8 +148,39 @@ namespace BalaurBohemianBroken {
 					tmp.text = "";
 					lines.Add(tmp);
 				}
-				
-				// __instance.deathStats.GetChild(3).GetComponent<TextMeshProUGUI>
+
+				foreach (var line in lines) {
+					line.fontSize *= font_mult;
+					line.richText = true;
+				}
+
+				lines[0].text = $"#{WoundView.specimenId.ToString()}-SAW-01";  // TODO: Creature name.
+
+				// TODO: This is awful for translation. If it gets interest, move this stuff over to translation files.
+				string mood = "moodrange";
+				if ((bool)(UnityEngine.Object)__instance.body.mindWipe) 
+					mood += "wiped";
+				else
+					mood += mental_state_integer;
+				if (__instance.body.succesfullyRolledLastStand)
+					mood += Locale.GetOther("moodrangeyethopeful");
+				mood = Locale.GetOther(mood).ToUpper();
+				lines[1].text = "MENTALS: " + ColorVar(mood);
+
+				int depth = (int)WorldGeneration.world.PlayerTotalDepthMeters();
+				int layer = 0;  // TODO: implement.
+				string time = TimeSpan.FromSeconds(WorldGeneration.TotalRunTime()).ToString("hh\\:mm\\:ss");
+				lines[2].text = $"RESULTS: {ColorVar(depth)}M, LAYER {ColorVar(layer)}, IN {ColorVar(time)}";
+				// lines[3]
+				lines[4].text = $"CONSUMPTION: {ColorVar(__instance.caloriesConsumed)} KCAL, {GetStat(stats, "FluidsConsumed")} ML";
+				lines[5].text = $"QUALITIES: {ColorVar(8)} INT, {ColorVar(10)} STR, {ColorVar(11)} RES";  // TODO: This.
+				// lines[6]
+				lines[7].text = $"PAIN AVERAGE: {GetStat(stats, "PainSufferedAverage")}%";
+				lines[8].text = $"FRACTURES: {GetStat(stats, "BonesFractured")}";
+				lines[9].text = $"CUTS/SHRAPNEL/INFECTIONS: {ColorVar(32)}/{ColorVar(10)}/{ColorVar(5)}";  // TODO: This.
+				lines[10].text = $"DAMAGE RECEIVED/RECOVERED: {ColorVar(523)}/{ColorVar(402)}";  // TODO: This.
+				// lines[11]
+				lines[12].SetText($"<align=\"center\"><b>FURTHER NOTES</b>");  // TODO: Center justification.
 				// __instance.deathStats.GetChild(3).GetComponent<TextMeshProUGUI>().text = $"#{WoundView.specimenId.ToString()}-SAW-01";
 				// __instance.deathStats.GetChild(4).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenphysical");
 				// __instance.deathStats.GetChild(5).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreendeceased");
@@ -158,7 +192,7 @@ namespace BalaurBohemianBroken {
 				// string str1 = depth + Locale.GetOther("endscreendepthres") + TimeSpan.FromSeconds((double) WorldGeneration.TotalRunTime()).ToString("hh\\:mm\\:ss");
 				// component1.text = str1;
 				// __instance.deathStats.GetChild(10).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreencalories");
-				// __instance.deathStats.GetChild(11).GetComponent<TextMeshProUGUI>().text = $"{__instance.caloriesConsumed} KCAL, {stats["FluidsConsumed"].Serialize()} ML";
+				// __instance.deathStats.GetChild(11).GetComponent<TextMeshProUGUI>().text = $"{__instance.caloriesConsumed} KCAL, {stats["FluidsConsumed"].GetValue()} ML";
 				// __instance.deathStats.GetChild(12).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreencasualties");
 				// TextMeshProUGUI cas_unknown = __instance.deathStats.GetChild(13).GetComponent<TextMeshProUGUI>();
 				// cas_unknown.text = $"{Locale.GetOther("endscreenunknown")} + {PlayerPrefs.GetInt("deathcount")}";
@@ -199,7 +233,7 @@ namespace BalaurBohemianBroken {
 		    yield return null;
 		}
 
-		public static void SetEndBackground(PlayerCamera __instance) {
+		private static void SetEndBackground(PlayerCamera __instance) {
 			// Drowned
 			if (__instance.body.inWater)
 				__instance.endScreen.sprite = __instance.deathScreenSprites[2];
@@ -209,6 +243,15 @@ namespace BalaurBohemianBroken {
 			// Normal
 			else
 				__instance.endScreen.sprite = __instance.deathScreenSprites[1];
+		}
+
+		private static string GetStat(Dictionary<string, IStat> stats, string name, int decimal_place = 0) {
+			// TODO: Empty checking
+			return ColorVar(stats[name].GetValue(decimal_place));
+		}
+		
+		private static string ColorVar(object variable) {
+			return $"<color={variable_color}>{variable}</color>";
 		}
 	}
 }

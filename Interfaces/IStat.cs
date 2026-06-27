@@ -10,5 +10,7 @@ namespace BalaurBohemianBroken {
         public bool IsNoteworthy();
 
         public void LoadToStatic();
+
+        public string GetValue(int decimal_place = -1);
     }
 }

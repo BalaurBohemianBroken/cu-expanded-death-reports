@@ -7,7 +7,7 @@ using System.Reflection;
 namespace BalaurBohemianBroken.StatTrackers {
     [HarmonyPatch]
     public class BonesFractured : StatGeneric<int> {
-        public override string name => "PainSuffered";
+        public override string name => "BonesFractured";
         public override int priority => 0;
 
         protected override List<string> notes => new List<string>();

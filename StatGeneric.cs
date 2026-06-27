@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json;
@@ -50,6 +51,14 @@ namespace BalaurBohemianBroken {
         public static void Reset() {
             // I'm not defaulting value because I currently use this only to store previous runs. No reason to default it.
             value_running = default;
+        }
+
+        public string GetValue(int decimal_place = -1) {
+            if (decimal_place > -1) {
+                if (value is float vf)
+                    return Math.Round(vf, decimal_place).ToString(CultureInfo.InvariantCulture);
+            }
+            return value.ToString();
         }
     }
 }
