@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json;
 
+// TODO: Add character colours to notes.
 namespace BalaurBohemianBroken {
     // These classes are a bit of a frankenstein of instance and static.
     // An instance is required to interact with the static stuff.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using BalaurBohemianBroken.StatTrackers;
 using UnityEngine;
@@ -32,34 +33,46 @@ namespace BalaurBohemianBroken {
             FillStatTrackers();
         }
 
+        // TODO: Regenerate static values on game start.
         public static void FillStatTrackers() {
-            List<IStat> main_stat_tracker_list = new List<IStat>() {
-                new BonesFractured(),
-                new Dislocations(),
-                new FluidsConsumedStat(),
-                new Infections(),
-                new PainSufferedAverage(),
-            };
-            List<IStat> special_stat_tracker_list = new List<IStat>() {
-                new Amputations(),
-                new BulletsFired(),
-                new PainSufferedTotal()
-            };
-
             StatTrackerNames = new List<string>();
             StatTrackersAll = new Dictionary<string, IStat>();
             StatTrackersBoring = new Dictionary<string, IStat>();
-            foreach (IStat stat in main_stat_tracker_list) {
-                StatTrackersBoring[stat.name] = stat;
-                StatTrackersAll[stat.name] = stat;
-                StatTrackerNames.Add(stat.name);
-            }
-
             StatTrackersSpecial = new Dictionary<string, IStat>();
-            foreach (IStat stat in special_stat_tracker_list) {
-                StatTrackersSpecial[stat.name] = stat;
-                StatTrackersAll[stat.name] = stat;
+            // Consistent ones that appear on the main menu. We don't check these for if they should appear
+            // in the special stats section.
+            HashSet<string> boring_stats = new HashSet<string>() {
+                "BonesFractured",
+                "Dislocations",
+                "FluidsConsumed",
+                "Infections",
+                "PainSufferedAverage",
+                "Strength",
+                "Intelligence",
+                "Resilience",
+                "LayerDepth",
+                "CutsOpened",
+                "Shrapnel",
+            };
+            // Based on:
+            // https://stackoverflow.com/questions/5120647/instantiate-all-classes-implementing-a-specific-interface
+            var interfaceType = typeof(IStat);
+            var all = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(x => x.GetTypes())
+                .Where(x => interfaceType.IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract)
+                .Select(x => Activator.CreateInstance(x));
+
+            foreach (IStat stat in all) {
+                if (StatTrackersAll.ContainsKey(stat.name))
+                    logger.LogWarning($"Duplicate of stat tracker with name {stat.name}");
                 StatTrackerNames.Add(stat.name);
+                StatTrackersAll[stat.name] = stat;
+                if (boring_stats.Contains(stat.name)) {
+                    StatTrackersBoring[stat.name] = stat;
+                }
+                else {
+                    StatTrackersSpecial[stat.name] = stat;
+                }
             }
         }
 
@@ -110,7 +123,7 @@ namespace BalaurBohemianBroken {
         // QUALITIES: int INT, str STR, res RES
         // 
         // PAIN UNITS: pain_suffered
-        // FRACTURES/BREAKS: bones_fractured/bones_broken
+        // FRACTURES: bones_fractured
         // CUTS/SHRAPNEL/INFECTIONS: opened_cuts/shrapnel/infections
         // DAMAGE RECEIVED/RECOVERED: injuries_received/injuries_recovered
         // 
@@ -124,6 +137,7 @@ namespace BalaurBohemianBroken {
         // 
         
         // Special fields:
+        // internal bleeding
         // THINGS CREATED: created
         // UNIQUE THINGS CREATED: created_unique
         // DISFIGURATIONS: disfigurations
