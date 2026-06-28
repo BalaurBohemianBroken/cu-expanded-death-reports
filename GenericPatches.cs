@@ -115,7 +115,7 @@ namespace BalaurBohemianBroken {
 		public static IEnumerator BalaurEndSequence(IEnumerator __result, PlayerCamera __instance, int type) {
 			BepInEx.Logging.Logger.CreateLogSource("ExpandedDeathReports.Patches").LogInfo("Running custom end screen");
 		    if (type == 0) {
-			    var stats = ExpandedDeathReports.stat_trackers_boring;
+			    var stats = ExpandedDeathReports.StatTrackersBoring;
 				PlayerPrefs.SetInt("deathcount", PlayerPrefs.GetInt("deathcount") + 1);
 				__instance.endScreen.gameObject.SetActive(true);
 				// TODO: Add stats that the game tracks to my stats: Time, depth, death count, calories, mental state. Death background?
