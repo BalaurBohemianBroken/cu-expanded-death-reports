@@ -19,9 +19,11 @@ namespace BalaurBohemianBroken {
 		private static float line_height = -36;
 		private static float font_mult = 0.6f;
 		private static string variable_color = "#5f1717";
-		private static string s_color = "#1d7587";
+		private static string s_color = "#000000"; //"#1d7587";
 		private static string hal_color = "#5e162d";
 		private static string finsky_color = "#5e3616";
+		// The areas for text elements are too long for the lines; this resizes it to fit.
+		private static float line_shrinkage = 30; 
 
 		private static List<string> creature_names = new List<string>() {
 			"Bosk",
@@ -138,10 +140,11 @@ namespace BalaurBohemianBroken {
 				__instance.deathStats.GetChild(2).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenunresolved");
 
 				Transform first_line = __instance.deathStats.GetChild(3);
+				TextMeshProUGUI first_line_tmp = first_line.GetComponent<TextMeshProUGUI>();
 				float y_start = first_line.position.y;
 				List<TextMeshProUGUI> lines_l = new List<TextMeshProUGUI>();
 				List<TextMeshProUGUI> lines_r = new List<TextMeshProUGUI>();
-				lines_l.Add(first_line.GetComponent<TextMeshProUGUI>());
+				lines_l.Add(first_line_tmp);
 				
 				// Clear existing text objects and create my own.
 				for (int i = 4; i < 14; i++) {
@@ -149,6 +152,13 @@ namespace BalaurBohemianBroken {
 				}
 				
 				// No, I don't think this code is good.
+				first_line_tmp.richText = true;
+				first_line_tmp.fontSize *= font_mult;
+				// first_line_tmp.rectTransform.pivot = new Vector2(1f, 0.5f);
+				Vector2 am = first_line_tmp.rectTransform.offsetMax;
+				am.x -= line_shrinkage;
+				first_line_tmp.rectTransform.offsetMax = am;
+				
 				for (int i = 4; i < 23; i++) {
 					Transform obj = UnityEngine.Object.Instantiate(first_line, first_line.parent);
 					Vector3 pos = obj.position;
@@ -169,19 +179,11 @@ namespace BalaurBohemianBroken {
 					lines_r.Add(tmp);
 				}
 
-				foreach (var line in lines_l) {
-					line.fontSize *= font_mult;
-					line.richText = true;
-					var r = line.rectTransform.rect;
-					line.rectTransform.rect.Set(r.x, r.y, r.width - 200, r.height);
-				}
-
-				foreach (var line in lines_r) {
-					line.fontSize *= font_mult;
-					line.richText = true;
-					var r = line.rectTransform.rect;
-					line.rectTransform.rect.Set(r.x, r.y, r.width - 200, r.height);
-				}
+				// Clear out space for the functional buttoms at the bottom of the page. Find a better solution in the future.
+				UnityEngine.Object.Destroy(lines_l[19]);
+				UnityEngine.Object.Destroy(lines_r[19]);
+				UnityEngine.Object.Destroy(lines_l[17]);
+				UnityEngine.Object.Destroy(lines_r[17]);
 
 				string name = creature_names.PickRandom();
 				lines_l[0].text = $"#{WoundView.specimenId.ToString()}-SAW-01";
