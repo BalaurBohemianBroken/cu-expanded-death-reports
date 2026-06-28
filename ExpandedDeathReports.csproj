@@ -33,6 +33,9 @@
       <Reference Include="UnityEngine.CoreModule">
         <HintPath>..\..\..\..\..\..\home\will\.local\share\Steam\steamapps\common\Casualties Unknown Demo\CasualtiesUnknown_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       </Reference>
+      <Reference Include="UnityEngine.TextRenderingModule">
+        <HintPath>..\..\..\..\..\..\home\will\.local\share\Steam\steamapps\common\Casualties Unknown Demo\CasualtiesUnknown_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      </Reference>
       <Reference Include="UnityEngine.UI">
         <HintPath>..\..\..\..\..\..\home\will\.local\share\Steam\steamapps\common\Casualties Unknown Demo\CasualtiesUnknown_Data\Managed\UnityEngine.UI.dll</HintPath>
       </Reference>
@@ -42,6 +45,10 @@
       <Reference Include="UnityEngine.UIModule">
         <HintPath>..\..\..\..\..\..\home\will\.local\share\Steam\steamapps\common\Casualties Unknown Demo\CasualtiesUnknown_Data\Managed\UnityEngine.UIModule.dll</HintPath>
       </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="xkcd-Regular.otf" />
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">

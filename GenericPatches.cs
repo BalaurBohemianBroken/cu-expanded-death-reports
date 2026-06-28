@@ -9,103 +9,110 @@ using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace BalaurBohemianBroken {
 
-	// This patch is special because it targets an IEnumerator.
-	// There's a rough guide on how to patch those located here:
-	// https://github.com/BepInEx/HarmonyX/wiki/Enumerator-patches
-	// [HarmonyPatch(typeof(PlayerCamera), nameof(PlayerCamera.EndSequence), MethodType.Enumerator)]
-	// public class EndScreen {
-	// 	// Making this stuff static is really bad form for IEnumerators usually.
-	// 	// Often there will be multiple of them, and they'll conflict!
-	// 	// But I don't think that's the case with this one.
-	// 	// Assigned when IEnum is created.
-	// 	public static PlayerCamera pc;
-	// 	public static int argument_type;
-	// 	public static int enum_state = 0;
-	// 	public static float timer2 = 0;
-	//
-	// 	public static bool Prefix(IEnumerator __instance) {
-	// 		BepInEx.Logging.Logger.CreateLogSource("ExpandedDeathReports.Patches").LogInfo("IEnumerator MoveNext patch");
-	// 		// return true;
-	// 		pc.SetTimeScale(PlayerCamera.SpeedType.Normal, switchSound: false, force: true);
-	// 		if (argument_type == 0)
-	// 		{
-	// 			PlayerPrefs.SetInt("deathcount", PlayerPrefs.GetInt("deathcount") + 1);
-	// 			pc.endScreen.gameObject.SetActive(value: true);
-	// 			if (pc.body.inWater)
-	// 			{
-	// 				pc.endScreen.sprite = pc.deathScreenSprites[2];
-	// 			}
-	// 			else if (pc.body.totalBleedSpeed > 0.02f)
-	// 			{
-	// 				pc.endScreen.sprite = pc.deathScreenSprites[1];
-	// 			}
-	// 			else
-	// 			{
-	// 				pc.endScreen.sprite = pc.deathScreenSprites[0];
-	// 			}
-	// 			int num = Mathf.RoundToInt(pc.body.AverageHappiness() * 0.1f);
-	// 			pc.deathStats.GetChild(0).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenstatus");
-	// 			pc.deathStats.GetChild(1).GetComponent<TextMeshProUGUI>().text = "2XXX-" + DateTime.Now.ToString("MM-dd-HH-mm-ss");
-	// 			pc.deathStats.GetChild(2).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenunresolved");
-	// 			pc.deathStats.GetChild(3).GetComponent<TextMeshProUGUI>().text = "#" + WoundView.specimenId + "-SAW-01";
-	// 			pc.deathStats.GetChild(4).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenphysical");
-	// 			pc.deathStats.GetChild(5).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreendeceased");
-	// 			pc.deathStats.GetChild(6).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenmental");
-	// 			pc.deathStats.GetChild(7).GetComponent<TextMeshProUGUI>().text = (Locale.GetOther("moodrange" + (pc.body.mindWipe ? "wiped" : ((object)num))) + (pc.body.succesfullyRolledLastStand ? Locale.GetOther("moodrangeyethopeful") : "")).ToUpper();
-	// 			pc.deathStats.GetChild(8).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreendepth");
-	// 			pc.deathStats.GetChild(9).GetComponent<TextMeshProUGUI>().text = (int)WorldGeneration.world.PlayerTotalDepthMeters() + Locale.GetOther("endscreendepthres") + TimeSpan.FromSeconds(WorldGeneration.TotalRunTime()).ToString("hh\\:mm\\:ss");
-	// 			pc.deathStats.GetChild(10).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreencalories");
-	// 			pc.deathStats.GetChild(11).GetComponent<TextMeshProUGUI>().text = $"{pc.caloriesConsumed}cal";
-	// 			pc.deathStats.GetChild(12).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreencasualties");
-	// 			pc.deathStats.GetChild(13).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenunknown") + " + " + PlayerPrefs.GetInt("deathcount");
-	// 			
-	// 			__instance.GetType().GetField("current", BindingFlags.Instance).SetValue(__instance, new WaitForSecondsRealtime(3.5f));
-	// 			Vector2 origPos2 = new Vector2(-336f, -1000f);
-	// 			Vector2 newPos2 = new Vector2(-336f, -934f);
-	// 			Sound.Play("receiptPrint", Vector2.zero, twoDimensional: true, pitchShift: false, null, 0.5f, 1f, noReverb: true, ignoreMixer: true);
-	// 			float timer2 = 1f;
-	// 			while (timer2 > 0f)
-	// 			{
-	// 				timer2 -= Time.unscaledDeltaTime * 1.5f;
-	// 				pc.deathStats.anchoredPosition = Vector2.LerpUnclamped(origPos2, newPos2, 1f - timer2);
-	// 				//yield return null;
-	// 			}
-	// 			pc.deathStats.anchoredPosition = newPos2;
-	// 			bool clicked = false;
-	// 			pc.deathStats.GetComponent<Button>().onClick.AddListener(delegate
-	// 			{
-	// 				clicked = true;
-	// 			});
-	// 			while (!clicked)
-	// 			{
-	// 				//yield return null;
-	// 			}
-	// 			Sound.Play("receiptRip", Vector2.zero, twoDimensional: true, pitchShift: false, null, 0.5f, 1f, noReverb: true, ignoreMixer: true);
-	// 			timer2 = 1f;
-	// 			origPos2 = new Vector2(-336f, -900f);
-	// 			newPos2 = new Vector2(-400f, 0f);
-	// 			while (timer2 > 0f)
-	// 			{
-	// 				timer2 -= Time.unscaledDeltaTime * 1.8f;
-	// 				pc.deathStats.anchoredPosition = Vector2.LerpUnclamped(origPos2, newPos2, Utils.OutQuart(1f - timer2));
-	// 				//yield return null;
-	// 			}
-	// 			pc.deathStats.anchoredPosition = newPos2;
-	// 		}
-	// 		pc.endScreen.gameObject.SetActive(value: true);
-	// 		//yield return null;
-	// 	}
-	// }
-	
+
+namespace BalaurBohemianBroken {
     [HarmonyPatch]
 	public class EndScreenMovenext {
 		// Originally tried to get distance between the first two lines using this, but it was wrong. So I manually found a value.
 		// __instance.deathStats.GetChild(4).position.y - y_start;
-		static float line_height = -36;
+		private static float line_height = -36;
 		private static float font_mult = 0.6f;
 		private static string variable_color = "#5f1717";
+		private static string s_color = "#1d7587";
+		private static string hal_color = "#5e162d";
+		private static string finsky_color = "#5e3616";
+
+		private static List<string> creature_names = new List<string>() {
+			"Bosk",
+			"Riesling",
+			"Lilium",
+			"Valeria",
+			"Vale",
+			"Balaur",
+			"Lloyd",
+			"Martin",
+			"Merry",
+			"Rey",
+			"Tapp",
+			"Eden",
+			"Zelda",
+			"Violet",
+			"Bark",
+			"Sanguine",
+			"Rose",
+			"Poppy",
+			"Peanut",
+			"Oscar",
+			"Miles",
+			"Lucky",
+			"Loki",
+			"Gusgus",
+			"Gizmo",
+			"Jade",
+			"Evan",
+			"Ginger",
+			"Coco",
+			"Brownie",
+			"Cinnamon",
+			"Chance",
+			"Buddy",
+			"Happy",
+			"You mattered.",
+			"Future",
+			"Comfort",
+			"Sunset on park",
+			"Twinkle",
+			"Plush",
+			"Kalia",
+			"Pumpkin",
+			"Ghost",
+			"Citaa",
+			"Arix",
+			"Crystal",
+			"Carter",
+			"Carissa",
+			"...",
+			"Flint",
+			"Ozzy",
+			"Quant",
+			"Solar",
+			"Sigur",
+			"Aran",
+			"Wesker",
+			"West",
+			"Red",
+			"Purple",
+			"Blue",
+			"Cloudy",
+			"Skye",
+			"Fox",
+			"Milky",
+			"Viz",
+			"Light",
+			"Riku",
+			"Penny",
+			"Pearl",
+			"I'm sorry.",
+			"Fluffy",
+			"Innocence",
+			"Ralsei",
+			"Softie",
+			"Cuddles",
+			"Critter",
+			"Yipper",
+			"Yapper",
+			"Beep",
+			"Sparks",
+			"Kyro",
+			"Dani",
+			"Bird",
+		};
+		// TODO: Alternate font for notes.
+		// You wouldn't think sourcing a font would be so difficult, but it is. Loading one is out of the question,
+		// that lead down a long undocumented path.
+		// Sourcing an existing font sounds easier, but the fonts I want to use are only referenced on prefab a that I can't
+		// instantiate myself, at SurvivorNote.
 		
 		// How IEnumerator is working here is a total mystery to me.
 		// I never assign to __result yet it does overwrite it
@@ -113,6 +120,7 @@ namespace BalaurBohemianBroken {
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(PlayerCamera), nameof(PlayerCamera.EndSequence))]
 		public static IEnumerator BalaurEndSequence(IEnumerator __result, PlayerCamera __instance, int type) {
+			// TODO: Prevent duplicate notes and names across reports.
 			BepInEx.Logging.Logger.CreateLogSource("ExpandedDeathReports.Patches").LogInfo("Running custom end screen");
 		    if (type == 0) {
 			    var stats = ExpandedDeathReports.StatTrackersBoring;
@@ -131,14 +139,16 @@ namespace BalaurBohemianBroken {
 
 				Transform first_line = __instance.deathStats.GetChild(3);
 				float y_start = first_line.position.y;
-				List<TextMeshProUGUI> lines = new List<TextMeshProUGUI>();
-				lines.Add(first_line.GetComponent<TextMeshProUGUI>());
+				List<TextMeshProUGUI> lines_l = new List<TextMeshProUGUI>();
+				List<TextMeshProUGUI> lines_r = new List<TextMeshProUGUI>();
+				lines_l.Add(first_line.GetComponent<TextMeshProUGUI>());
 				
 				// Clear existing text objects and create my own.
 				for (int i = 4; i < 14; i++) {
 					UnityEngine.Object.Destroy(__instance.deathStats.GetChild(i).gameObject);
 				}
 				
+				// No, I don't think this code is good.
 				for (int i = 4; i < 23; i++) {
 					Transform obj = UnityEngine.Object.Instantiate(first_line, first_line.parent);
 					Vector3 pos = obj.position;
@@ -146,15 +156,37 @@ namespace BalaurBohemianBroken {
 					obj.position = pos;
 					var tmp = obj.GetComponent<TextMeshProUGUI>();
 					tmp.text = "";
-					lines.Add(tmp);
+					lines_l.Add(tmp);
+				}
+				
+				for (int i = 3; i < 23; i++) {
+					Transform obj = UnityEngine.Object.Instantiate(first_line, first_line.parent);
+					Vector3 pos = obj.position;
+					pos.y += line_height * (i - 3);
+					obj.position = pos;
+					var tmp = obj.GetComponent<TextMeshProUGUI>();
+					tmp.text = "";
+					lines_r.Add(tmp);
 				}
 
-				foreach (var line in lines) {
+				foreach (var line in lines_l) {
 					line.fontSize *= font_mult;
 					line.richText = true;
+					var r = line.rectTransform.rect;
+					line.rectTransform.rect.Set(r.x, r.y, r.width - 200, r.height);
 				}
 
-				lines[0].text = $"#{WoundView.specimenId.ToString()}-SAW-01";  // TODO: Creature name.
+				foreach (var line in lines_r) {
+					line.fontSize *= font_mult;
+					line.richText = true;
+					var r = line.rectTransform.rect;
+					line.rectTransform.rect.Set(r.x, r.y, r.width - 200, r.height);
+				}
+
+				string name = creature_names.PickRandom();
+				lines_l[0].text = $"#{WoundView.specimenId.ToString()}-SAW-01";
+				ExpandedDeathReports.logger.LogMessage(lines_r[0].bounds);
+				lines_r[0].text = $"<align=\"right\">{SNote(name)}</align>";
 
 				// TODO: This is awful for translation. If it gets interest, move this stuff over to translation files.
 				string mood = "moodrange";
@@ -165,22 +197,22 @@ namespace BalaurBohemianBroken {
 				if (__instance.body.succesfullyRolledLastStand)
 					mood += Locale.GetOther("moodrangeyethopeful");
 				mood = Locale.GetOther(mood).ToUpper();
-				lines[1].text = "MENTALS: " + ColorVar(mood);
+				lines_l[1].text = "MENTALS: " + ColorVar(mood);
 
 				int depth = (int)WorldGeneration.world.PlayerTotalDepthMeters();
 				int layer = 0;  // TODO: implement.
 				string time = TimeSpan.FromSeconds(WorldGeneration.TotalRunTime()).ToString("hh\\:mm\\:ss");
-				lines[2].text = $"RESULTS: {ColorVar(depth)}M, LAYER {ColorVar(layer)}, IN {ColorVar(time)}";
+				lines_l[2].text = $"RESULTS: {ColorVar(depth)}M, LAYER {ColorVar(layer)}, IN {ColorVar(time)}";
 				// lines[3]
-				lines[4].text = $"CONSUMPTION: {ColorVar(__instance.caloriesConsumed)} KCAL, {GetStat(stats, "FluidsConsumed")} ML";
-				lines[5].text = $"QUALITIES: {ColorVar(8)} INT, {ColorVar(10)} STR, {ColorVar(11)} RES";  // TODO: This.
+				lines_l[4].text = $"CONSUMPTION: {ColorVar(__instance.caloriesConsumed)} KCAL, {GetStat(stats, "FluidsConsumed")} ML";
+				lines_l[5].text = $"QUALITIES: {ColorVar(8)} INT, {ColorVar(10)} STR, {ColorVar(11)} RES";  // TODO: This.
 				// lines[6]
-				lines[7].text = $"PAIN AVERAGE: {GetStat(stats, "PainSufferedAverage")}%";
-				lines[8].text = $"FRACTURES: {GetStat(stats, "BonesFractured")}";
-				lines[9].text = $"CUTS/SHRAPNEL/INFECTIONS: {ColorVar(32)}/{ColorVar(10)}/{ColorVar(5)}";  // TODO: This.
-				lines[10].text = $"DAMAGE RECEIVED/RECOVERED: {ColorVar(523)}/{ColorVar(402)}";  // TODO: This.
+				lines_l[7].text = $"PAIN AVERAGE: {GetStat(stats, "PainSufferedAverage")}%";
+				lines_l[8].text = $"FRACTURES: {GetStat(stats, "BonesFractured")}";
+				lines_l[9].text = $"CUTS/SHRAPNEL/INFECTIONS: {ColorVar(32)}/{ColorVar(10)}/{ColorVar(5)}";  // TODO: This.
+				lines_l[10].text = $"DAMAGE RECEIVED/RECOVERED: {ColorVar(523)}/{ColorVar(402)}";  // TODO: This.
 				// lines[11]
-				lines[12].SetText($"<align=\"center\"><b>FURTHER NOTES</b>");  // TODO: Center justification.
+				lines_l[12].SetText($"<align=\"center\"><b>FURTHER NOTES</b>");  // TODO: Center justification.
 				// __instance.deathStats.GetChild(3).GetComponent<TextMeshProUGUI>().text = $"#{WoundView.specimenId.ToString()}-SAW-01";
 				// __instance.deathStats.GetChild(4).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenphysical");
 				// __instance.deathStats.GetChild(5).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreendeceased");
@@ -252,6 +284,18 @@ namespace BalaurBohemianBroken {
 		
 		private static string ColorVar(object variable) {
 			return $"<color={variable_color}>{variable}</color>";
+		}
+
+		private static string SNote(object note) {
+			return $"<color={s_color}>{note}</color>";
+		}
+
+		private static string HalNote(object note) {
+			return $"<color={hal_color}>{note}</color>";
+		}
+
+		private static string FinskyNote(object note) {
+			return $"<color={finsky_color}>{note}</color>";
 		}
 	}
 }
