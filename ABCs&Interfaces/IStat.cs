@@ -14,9 +14,9 @@ namespace BalaurBohemianBroken {
         // TODO: What this field should be identified as on the report.
         // public string fieldName { get; }
 
-        public bool IsNoteworthy();
+        public float Noteworthiness();
 
-        public string GetStatReadout(int decimal_place = -1);
+        public string GetStatReadout();
 
         public void Reset();
     }

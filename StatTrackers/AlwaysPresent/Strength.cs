@@ -19,11 +19,11 @@ namespace BalaurBohemianBroken.StatTrackers {
         private int valueRunning => PlayerCamera.main?.body?.skills?.STR ?? 0;
         private int valueStored = 0;
 
-        public bool IsNoteworthy() {
-            return false;
+        public float Noteworthiness() {
+            return 0;
         }
 
-        public string GetStatReadout(int decimal_place = -1) {
+        public string GetStatReadout() {
             if (this == instance)
                 return valueRunning + " STR";
             return valueStored + " STR";

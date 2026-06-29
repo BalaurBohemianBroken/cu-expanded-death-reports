@@ -19,8 +19,8 @@ namespace BalaurBohemianBroken.StatTrackers {
                 instance.value += 1;
         }
 
-        public override bool IsNoteworthy() {
-            return false;
+        public override float Noteworthiness() {
+            return 0;
         }
     }
 }

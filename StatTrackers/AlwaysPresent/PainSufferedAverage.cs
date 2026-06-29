@@ -38,9 +38,8 @@ namespace BalaurBohemianBroken.StatTrackers {
                 instance.deltatime += 1;
             }
         }
-
-        public bool IsNoteworthy() {
-            return false;
+        public float Noteworthiness() {
+            return 0;
         }
 
         public float GetAveragePain() {
@@ -48,14 +47,9 @@ namespace BalaurBohemianBroken.StatTrackers {
         }
 
         // TODO: This reports back NAN
-        public string GetStatReadout(int decimal_place = -1) {
+        public string GetStatReadout() {
             float v = GetAveragePain();
-            string s;
-            if (decimal_place > -1)
-                s = Math.Round(v, decimal_place).ToString(CultureInfo.InvariantCulture);
-            else
-                s = v.ToString(CultureInfo.InvariantCulture);
-
+            var s = Math.Round(v, 0).ToString(CultureInfo.InvariantCulture);
             return s + "%";
         }
 

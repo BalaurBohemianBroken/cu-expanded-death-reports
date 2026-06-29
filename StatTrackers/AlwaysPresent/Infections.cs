@@ -27,8 +27,8 @@ namespace BalaurBohemianBroken.StatTrackers {
                 infectionLastCheck = new Dictionary<Limb, bool>();
         }
 
-        public override bool IsNoteworthy() {
-            return false;
+        public override float Noteworthiness() {
+            return 0;
         }
     }
 }

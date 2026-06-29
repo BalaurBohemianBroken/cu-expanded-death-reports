@@ -103,8 +103,8 @@ namespace BalaurBohemianBroken.StatTrackers {
             value = humanNames.PickRandom();
         }
 
-        public override bool IsNoteworthy() {
-            return false;
+        public override float Noteworthiness() {
+            return 0;
         }
     }
 }

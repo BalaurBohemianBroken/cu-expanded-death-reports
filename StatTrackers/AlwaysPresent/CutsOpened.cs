@@ -25,8 +25,8 @@ namespace BalaurBohemianBroken.StatTrackers {
             wasCutLastFrame[__instance] = __instance.bleedAmount > 0;
         }
 
-        public override bool IsNoteworthy() {
-            return false;
+        public override float Noteworthiness() {
+            return 0;
         }
     }
 }

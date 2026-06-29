@@ -26,12 +26,12 @@ namespace BalaurBohemianBroken.StatTrackers {
         private List<string> _notes_negative = new List<string> {
             "A soft heart, not made for this..."
         };
-
-        public bool IsNoteworthy() {
-            return false;
+        
+        public float Noteworthiness() {
+            return 0;
         }
 
-        public string GetStatReadout(int decimal_place = -1) {
+        public string GetStatReadout() {
             if (this == instance)
                 return valueRunning + " RES";
             return valueStored + " RES";

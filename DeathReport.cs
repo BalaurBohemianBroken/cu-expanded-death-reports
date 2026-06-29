@@ -129,6 +129,8 @@ public class DeathReport {
     private static string sColor = "#000000"; //"#1d7587";
     private static string halColor = "#5e162d";
     private static string finskyColor = "#5e3616";
+    private static int specialStatStartLine = 13;
+    private static int specialStatEndLine = 19;
     
     // Consistent ones that appear on the main menu. We don't check these for if they should appear
     // in the special stats section.
@@ -152,6 +154,7 @@ public class DeathReport {
         SplitStats(stats);
         FillHeaders();
         FillBoringStats();
+        FillSpecialStats();
     }
     
     private void PrepareTextFields() {
@@ -233,15 +236,44 @@ public class DeathReport {
         // lines[11]
         linesL[12].SetText($"<align=\"center\"><b>FURTHER NOTES</b>");
     }
+
+    private void FillSpecialStats() {
+        float total_weight = 0;
+        List<float> weights = new();
+        List<IStat> candidates = new();
+        // TODO: Command to print current noteworthiness
+        foreach (IStat stat in statsSpecial.Values) {
+            float weight = stat.Noteworthiness();
+            if (weight <= 0)
+                continue;
+            total_weight += weight;
+            candidates.Add(stat);
+            weights.Add(weight);
+        }
+
+        int line_index = specialStatStartLine;
+        while (line_index <= specialStatEndLine && candidates.Count > 0) {
+            ExpandedDeathReports.logger.LogMessage(line_index);
+            int index = ExpandedDeathReports.GetRandomWeightedIndex(weights, total_weight);
+            IStat candidate = candidates[index];
+            candidates.RemoveAt(index);
+            weights.RemoveAt(index);
+            // TODO: Try for note.
+            // TODO: Add fieldName variable.
+            ExpandedDeathReports.logger.LogMessage(candidate.GetStatReadout());
+            linesL[line_index].text = $"{candidate.GetStatReadout()}";
+            line_index++;
+        }
+    }
     
-    private string Stat(string stat_name, int decimal_place = -1) {
+    private string Stat(string stat_name) {
         if (!statsAll.TryGetValue(stat_name, out IStat stat)) {
             ExpandedDeathReports.logger.LogError($"Failed to get stat for death report: {stat_name}");
             return "ERR";
         }
 
         try {
-            return stat.GetStatReadout(decimal_place);
+            return stat.GetStatReadout();
         }
         catch (Exception ex) {
             ExpandedDeathReports.logger.LogError($"Failed on GetStatReadout for stat: {stat_name}\nException: {ex}");

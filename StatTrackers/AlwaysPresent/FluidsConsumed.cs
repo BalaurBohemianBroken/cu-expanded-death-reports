@@ -31,17 +31,13 @@ namespace BalaurBohemianBroken.StatTrackers {
                 instance.value += 200;
         }
 
-        public override string GetStatReadout(int decimal_place = -1) {
-            string num;
-            if (decimal_place > -1)
-                num = Math.Round(value, decimal_place).ToString(CultureInfo.InvariantCulture);
-            else
-                num = value.ToString(CultureInfo.InvariantCulture);
+        public override string GetStatReadout() {
+            var num = Math.Round(value, 0).ToString(CultureInfo.InvariantCulture);
             return num + " ML";
         }
 
-        public override bool IsNoteworthy() {
-            return false;
+        public override float Noteworthiness() {
+            return 0;
         }
     }
 }

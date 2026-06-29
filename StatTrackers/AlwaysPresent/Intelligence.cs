@@ -27,11 +27,11 @@ namespace BalaurBohemianBroken.StatTrackers {
             "How did they make it this far?"
         };
 
-        public bool IsNoteworthy() {
-            return false;
+        public float Noteworthiness() {
+            return 0;
         }
 
-        public string GetStatReadout(int decimal_place = -1) {
+        public string GetStatReadout() {
             // TODO: Check this works.
             if (this == instance)
                 return valueRunning + " INT";

@@ -20,11 +20,11 @@ namespace BalaurBohemianBroken.StatTrackers {
         private string valueRunning => TimeSpan.FromSeconds(WorldGeneration.TotalRunTime()).ToString("hh\\:mm\\:ss");
         private string valueStored = null;
 
-        public bool IsNoteworthy() {
-            return false;
+        public float Noteworthiness() {
+            return 0;
         }
 
-        public string GetStatReadout(int decimal_place = -1) {
+        public string GetStatReadout() {
             // TODO: Check this works.
             if (this == instance)
                 return valueRunning.ToString();

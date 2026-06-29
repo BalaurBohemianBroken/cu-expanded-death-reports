@@ -44,13 +44,11 @@ namespace BalaurBohemianBroken {
             value = default;
         }
 
-        public abstract bool IsNoteworthy();
+        public abstract float Noteworthiness();
 
-        public virtual string GetStatReadout(int decimal_place = -1) {
-            if (decimal_place > -1) {
-                if (value is float vf)
-                    return Math.Round(vf, decimal_place).ToString(CultureInfo.InvariantCulture);
-            }
+        public virtual string GetStatReadout() {
+            if (value is float vf)
+                return Math.Round(vf, 0).ToString(CultureInfo.InvariantCulture);
             return value.ToString();
         }
     }

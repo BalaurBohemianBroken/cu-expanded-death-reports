@@ -30,8 +30,8 @@ namespace BalaurBohemianBroken.StatTrackers {
                 shrapnelLastFrame = new Dictionary<Limb, int>();
         }
 
-        public override bool IsNoteworthy() {
-            return false;
+        public override float Noteworthiness() {
+            return 0;
         }
     }
 }

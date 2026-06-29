@@ -11,7 +11,7 @@ namespace BalaurBohemianBroken.StatTrackers {
         private int valueRunning => PlayerCamera.main?.caloriesConsumed ?? 0;
         private int value;
 
-        public string GetStatReadout(int decimal_place = -1) {
+        public string GetStatReadout() {
             // TODO: This is not a perfect solution, but it works for now. Check when codebase is more finished that this still works.
             if (value == 0)
                 value = valueRunning;
@@ -22,8 +22,8 @@ namespace BalaurBohemianBroken.StatTrackers {
             value = 0;
         }
 
-        public bool IsNoteworthy() {
-            return false;
+        public float Noteworthiness() {
+            return 0;
         }
 
         public string Serialize() {

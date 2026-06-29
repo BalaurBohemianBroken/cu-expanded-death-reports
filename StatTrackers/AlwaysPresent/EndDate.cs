@@ -16,7 +16,7 @@ namespace BalaurBohemianBroken.StatTrackers {
         private string timeRunning => DateTime.Now.ToString("MM-dd-HH-mm-ss");
         private string time;
 
-        public string GetStatReadout(int decimal_place = -1) {
+        public string GetStatReadout() {
             // TODO: This is not a perfect solution, but it works for now. Check when codebase is more finished that this still works.
             time ??= timeRunning;
             return "2XXX-" + time;
@@ -26,8 +26,8 @@ namespace BalaurBohemianBroken.StatTrackers {
             time = "";
         }
 
-        public bool IsNoteworthy() {
-            return false;
+        public float Noteworthiness() {
+            return 0;
         }
 
         public string Serialize() {

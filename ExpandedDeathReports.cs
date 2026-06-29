@@ -86,5 +86,30 @@ namespace BalaurBohemianBroken {
             // This is placed for multiplayer compatibility. Maybe. Idk how multiplayer works right now, just assuming.
             return PlayerCamera.main.body == body;
         }
+
+        // Taken from: https://discussions.unity.com/t/random-numbers-with-a-weighted-chance/646590/3
+        public static int GetRandomWeightedIndex(List<float> weights, float total_weight = -1) {
+            if (weights == null || weights.Count == 0)
+                throw new ArgumentException();
+
+            if (Mathf.Approximately(total_weight, -1)) {
+                foreach (float weight in weights) {
+                    if (weight < 0 || float.IsNaN(weight))
+                        throw new ArgumentException();
+                    total_weight += weight;
+                }
+            }
+
+            float random_number = UnityEngine.Random.value;
+            float sum = 0f;
+            for (int i = 0; i < weights.Count; i++) {
+                float weight = weights[i];
+                sum += weight / total_weight;
+                if (sum >= random_number)
+                    return i;
+            }
+  
+            throw new ArithmeticException();
+        }
     }
 }

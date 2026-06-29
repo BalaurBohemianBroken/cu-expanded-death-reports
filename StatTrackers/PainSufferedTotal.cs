@@ -23,8 +23,11 @@ namespace BalaurBohemianBroken.StatTrackers {
             instance.value += CalculatePainUnits(__instance.averagePain, Time.deltaTime);
         }
 
-        public override bool IsNoteworthy() {
-            return value > noteworthyThreshold;
+        public override float Noteworthiness() {
+            // TODO: Scale with biome.
+            if (value >= noteworthyThreshold)
+                return 1;
+            return 0;
         }
 
         private static float CalculatePainUnits(float pain_level, float seconds) {

@@ -45,7 +45,7 @@ namespace BalaurBohemianBroken.StatTrackers {
         private bool lastStand;
         private bool wiped;
 
-        public string GetStatReadout(int decimal_place = -1) {
+        public string GetStatReadout() {
             string mood = "moodrange";
             if (wiped) 
                 mood += "wiped";
@@ -61,10 +61,9 @@ namespace BalaurBohemianBroken.StatTrackers {
             lastStand = false;
             wiped = false;
         }
-
-        public bool IsNoteworthy() {
-            // TODO: Comments on mind wipe, last stand.
-            return false;
+        public float Noteworthiness() {
+            // TODO: Comment on mind wipe, last stand.
+            return 0;
         }
 
         public virtual string Serialize() {

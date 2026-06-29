@@ -10,9 +10,9 @@ namespace BalaurBohemianBroken.StatTrackers {
         public override string name => "DeathIndex";
         public override int priority => 0;
         
-        public override bool IsNoteworthy() {
+        public override float Noteworthiness() {
             // TODO: Milestones?
-            return false;
+            return 0;
         }
     }
 }
