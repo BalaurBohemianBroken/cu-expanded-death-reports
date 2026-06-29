@@ -11,10 +11,12 @@ namespace BalaurBohemianBroken {
         public IStat runningInstance { get; set; }
         public int priority { get; }
         public string name { get; }
+        // TODO: What this field should be identified as on the report.
+        // public string fieldName { get; }
 
         public bool IsNoteworthy();
 
-        public string GetValue(int decimal_place = -1);
+        public string GetStatReadout(int decimal_place = -1);
 
         public void Reset();
     }

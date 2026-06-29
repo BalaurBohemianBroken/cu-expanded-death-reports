@@ -17,6 +17,7 @@ namespace BalaurBohemianBroken.StatTrackers {
             set => instance = (PainSufferedAverage) value;
         }
         public string name => "PainSufferedAverage";
+        public string fieldName => "PAIN AVG:";
         public int priority => 0;
         
         private float value = 0;
@@ -47,12 +48,15 @@ namespace BalaurBohemianBroken.StatTrackers {
         }
 
         // TODO: This reports back NAN
-        public string GetValue(int decimal_place = -1) {
+        public string GetStatReadout(int decimal_place = -1) {
             float v = GetAveragePain();
-            if (decimal_place > -1) {
-                return Math.Round(v, decimal_place).ToString(CultureInfo.InvariantCulture);
-            }
-            return v.ToString(CultureInfo.InvariantCulture);
+            string s;
+            if (decimal_place > -1)
+                s = Math.Round(v, decimal_place).ToString(CultureInfo.InvariantCulture);
+            else
+                s = v.ToString(CultureInfo.InvariantCulture);
+
+            return s + "%";
         }
 
         public void Reset() {

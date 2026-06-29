@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using HarmonyLib;
 using UnityEngine;
 
@@ -27,6 +29,15 @@ namespace BalaurBohemianBroken.StatTrackers {
                 return;
             if (liquid_id is > 0 and < 6)
                 instance.value += 200;
+        }
+
+        public override string GetStatReadout(int decimal_place = -1) {
+            string num;
+            if (decimal_place > -1)
+                num = Math.Round(value, decimal_place).ToString(CultureInfo.InvariantCulture);
+            else
+                num = value.ToString(CultureInfo.InvariantCulture);
+            return num + " ML";
         }
 
         public override bool IsNoteworthy() {

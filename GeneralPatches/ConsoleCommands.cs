@@ -34,18 +34,14 @@ namespace BalaurBohemianBroken {
                     return;
                 }
 
-                instance.LogToConsole($"{args[i]}: {tracker.Serialize()} ({tracker.GetValue()})");
+                instance.LogToConsole($"{args[i]}: {tracker.Serialize()} ({tracker.GetStatReadout()})");
             }
         }
         
         private static void PrintAllTrackers(string[] args) {
-            instance.LogToConsole($"==== Current boring trackers ====");
-            foreach (KeyValuePair<string, IStat> kvp in ExpandedDeathReports.StatTrackersBoring) {
-                instance.LogToConsole($"{kvp.Value.name}: {kvp.Value.Serialize()} ({kvp.Value.GetValue()})");
-            }
-            instance.LogToConsole($"==== Current special trackers ====");
-            foreach (KeyValuePair<string, IStat> kvp in ExpandedDeathReports.StatTrackersSpecial) {
-                instance.LogToConsole($"{kvp.Value.name}: {kvp.Value.Serialize()} ({kvp.Value.GetValue()})");
+            instance.LogToConsole($"==== Current stats ====");
+            foreach (KeyValuePair<string, IStat> kvp in ExpandedDeathReports.StatTrackersAll) {
+                instance.LogToConsole($"{kvp.Value.name}: {kvp.Value.Serialize()} ({kvp.Value.GetStatReadout()})");
             }
         }
     }

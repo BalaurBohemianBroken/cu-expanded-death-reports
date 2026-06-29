@@ -7,34 +7,26 @@ using Newtonsoft.Json;
 
 namespace BalaurBohemianBroken.StatTrackers {
     [HarmonyPatch]
-    public class Resilience : IStat { 
-        private static Resilience instance;
+    public class LayerNumber : IStat {
+        private static LayerNumber instance;
         public IStat runningInstance {
             get => instance;
-            set => instance = (Resilience)value;
+            set => instance = (LayerNumber)value;
         }
-        public string name => "Resilience";
+        public string name => "LayerNumber";
         public int priority => 0;
 
-        public int valueRunning => PlayerCamera.main?.body?.skills?.RES ?? 0;
+        private int valueRunning => WorldGeneration.world?.biomeDepth ?? 0;
         private int valueStored = 0;
-
-        private List<string> _notes_positive = new List<string> {
-            "Indomitable.",
-            "Endurance, paid for in blood.",
-        };
-        private List<string> _notes_negative = new List<string> {
-            "A soft heart, not made for this..."
-        };
-
+        
         public bool IsNoteworthy() {
             return false;
         }
 
         public string GetStatReadout(int decimal_place = -1) {
             if (this == instance)
-                return valueRunning + " RES";
-            return valueStored + " RES";
+                return "LAYER " + valueRunning.ToString();
+            return "LAYER " + valueStored.ToString();
         }
 
         public void Reset() {

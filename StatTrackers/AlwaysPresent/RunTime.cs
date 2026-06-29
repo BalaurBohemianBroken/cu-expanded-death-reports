@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BepInEx;
 using HarmonyLib;
@@ -7,38 +8,31 @@ using Newtonsoft.Json;
 
 namespace BalaurBohemianBroken.StatTrackers {
     [HarmonyPatch]
-    public class Resilience : IStat { 
-        private static Resilience instance;
+    public class RunTime : IStat {
+        private static RunTime instance;
         public IStat runningInstance {
             get => instance;
-            set => instance = (Resilience)value;
+            set => instance = (RunTime)value;
         }
-        public string name => "Resilience";
+        public string name => "RunTime";
         public int priority => 0;
 
-        public int valueRunning => PlayerCamera.main?.body?.skills?.RES ?? 0;
-        private int valueStored = 0;
-
-        private List<string> _notes_positive = new List<string> {
-            "Indomitable.",
-            "Endurance, paid for in blood.",
-        };
-        private List<string> _notes_negative = new List<string> {
-            "A soft heart, not made for this..."
-        };
+        private string valueRunning => TimeSpan.FromSeconds(WorldGeneration.TotalRunTime()).ToString("hh\\:mm\\:ss");
+        private string valueStored = null;
 
         public bool IsNoteworthy() {
             return false;
         }
 
         public string GetStatReadout(int decimal_place = -1) {
+            // TODO: Check this works.
             if (this == instance)
-                return valueRunning + " RES";
-            return valueStored + " RES";
+                return valueRunning.ToString();
+            return valueStored.ToString();
         }
 
         public void Reset() {
-            valueStored = 0;
+            valueStored = null;
         }
 
         public virtual string Serialize() {
@@ -53,7 +47,7 @@ namespace BalaurBohemianBroken.StatTrackers {
         
         public virtual void Deserialize(string serialized) {
             try {
-                valueStored = JsonConvert.DeserializeObject<int>(serialized);
+                valueStored = JsonConvert.DeserializeObject<string>(serialized);
             }
             catch (JsonException) {
                 ExpandedDeathReports.logger.LogWarning($"Failed to deserialize object.\nName: {name}\nSerialization string: {serialized}");

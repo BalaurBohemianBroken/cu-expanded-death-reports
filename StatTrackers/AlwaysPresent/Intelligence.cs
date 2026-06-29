@@ -31,10 +31,11 @@ namespace BalaurBohemianBroken.StatTrackers {
             return false;
         }
 
-        public string GetValue(int decimal_place = -1) {
+        public string GetStatReadout(int decimal_place = -1) {
+            // TODO: Check this works.
             if (this == instance)
-                return valueRunning.ToString();
-            return valueStored.ToString();
+                return valueRunning + " INT";
+            return valueStored + " INT";
         }
 
         public void Reset() {

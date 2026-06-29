@@ -23,10 +23,10 @@ namespace BalaurBohemianBroken.StatTrackers {
             return false;
         }
 
-        public string GetValue(int decimal_place = -1) {
+        public string GetStatReadout(int decimal_place = -1) {
             if (this == instance)
-                return valueRunning.ToString();
-            return valueStored.ToString();
+                return valueRunning + " STR";
+            return valueStored + " STR";
         }
 
         public void Reset() {
