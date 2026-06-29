@@ -10,15 +10,13 @@ namespace BalaurBohemianBroken.StatTrackers {
         public override string name => "BonesFractured";
         public override int priority => 0;
 
-        protected override List<string> notes => new List<string>();
-        
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Limb), nameof(Limb.BreakBone))]
         public static void PatchUpdate(Limb __instance) {
             if (!ExpandedDeathReports.IsMainBody(__instance.body))
                 return;
             if (!__instance.broken)
-                value_running += 1;
+                instance.value += 1;
         }
 
 

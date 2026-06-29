@@ -8,48 +8,46 @@ using Newtonsoft.Json;
 namespace BalaurBohemianBroken.StatTrackers {
     [HarmonyPatch]
     public class Strength : IStat {
+        private static Strength instance;
+        public IStat runningInstance {
+            get => instance;
+            set => instance = (Strength)value;
+        }
         public string name => "Strength";
         public int priority => 0;
 
-        public int value_running => PlayerCamera.main?.body?.skills?.STR ?? 0;
-        private int value = 0;
-
-        private List<string> _notes_positive = new List<string> {
-        };
-        private List<string> _notes_negative = new List<string> {
-        };
+        private int valueRunning => PlayerCamera.main?.body?.skills?.STR ?? 0;
+        private int valueStored = 0;
 
         public bool IsNoteworthy() {
             return false;
         }
 
-        public void LoadToStatic() {
-            // No. Don't do this. It's a mechanic controlled by the game.
-            return;
-        }
-
-        public void LoadFromStatic() {
-            value = value_running;
-        }
-
         public string GetValue(int decimal_place = -1) {
-            return value.ToString();
+            if (this == instance)
+                return valueRunning.ToString();
+            return valueStored.ToString();
         }
-        
-        public virtual string Serialize() {
-            LoadFromStatic();
+
+        public void Reset() {
+            valueStored = 0;
+        }
+
+        public string Serialize() {
+            // Not sure if there's a situation where I would want to serialize a stored value rather than a live value.
+            // If so, I'll need to handle that.
             try {
-                return JsonConvert.SerializeObject(value);
+                return JsonConvert.SerializeObject(valueRunning);
             }
             catch (JsonException) {
-                ExpandedDeathReports.logger.LogWarning($"Failed to serialize object.\nName: {name}\nValue: {value}");
+                ExpandedDeathReports.logger.LogWarning($"Failed to serialize object.\nName: {name}\nValue: {valueRunning}");
                 throw;
             }
         }
         
         public virtual void Deserialize(string serialized) {
             try {
-                value = JsonConvert.DeserializeObject<int>(serialized);
+                valueStored = JsonConvert.DeserializeObject<int>(serialized);
             }
             catch (JsonException) {
                 ExpandedDeathReports.logger.LogWarning($"Failed to deserialize object.\nName: {name}\nSerialization string: {serialized}");

@@ -11,11 +11,7 @@ namespace BalaurBohemianBroken.StatTrackers {
         public override string name => "PainSufferedTotal";
         public override int priority => 0;
 
-        private static float noteworthy_threshold = 25;
-        
-        private List<string> _notes = new List<string>() {
-        };
-        protected override List<string> notes => _notes;
+        private static float noteworthyThreshold = 25;
         
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Body), nameof(Body.Update))]
@@ -24,11 +20,11 @@ namespace BalaurBohemianBroken.StatTrackers {
             // But I'm hoping they use unity's builtin functions.
             if (!ExpandedDeathReports.IsMainBody(__instance))
                 return;
-            value_running += CalculatePainUnits(__instance.averagePain, Time.deltaTime);
+            instance.value += CalculatePainUnits(__instance.averagePain, Time.deltaTime);
         }
 
         public override bool IsNoteworthy() {
-            return value > noteworthy_threshold;
+            return value > noteworthyThreshold;
         }
 
         private static float CalculatePainUnits(float pain_level, float seconds) {

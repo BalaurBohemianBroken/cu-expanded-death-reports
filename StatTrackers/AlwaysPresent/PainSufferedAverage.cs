@@ -11,30 +11,30 @@ namespace BalaurBohemianBroken.StatTrackers {
     // Because this one has a bunch of custom behaviour I've opted to not make it StatGeneric.
     [HarmonyPatch]
     public class PainSufferedAverage : IStat {
+        private static PainSufferedAverage instance;
+        public IStat runningInstance {
+            get => instance;
+            set => instance = (PainSufferedAverage) value;
+        }
         public string name => "PainSufferedAverage";
         public int priority => 0;
-        private float value = 0;
-        private static float value_running = 0;
-        private float deltatime = 0;
-        public static float deltatime_running = 0;
-
-        private const float update_interval = 1;
-        private static float time_since_last_update = 0;
         
-        private List<string> _notes = new List<string>() {
-        };
-        protected List<string> notes => _notes;
+        private float value = 0;
+        private float deltatime = 0;
+
+        private const float updateInterval = 1;
+        private static float timeSinceLastUpdate = 0;
         
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Body), nameof(Body.Update))]
         public static void PatchUpdate(Body __instance) {
             if (!ExpandedDeathReports.IsMainBody(__instance))
                 return;
-            time_since_last_update += Time.deltaTime;
-            while (time_since_last_update > update_interval) {
-                time_since_last_update -= update_interval;
-                value_running += __instance.averagePain;
-                deltatime_running += 1;
+            timeSinceLastUpdate += Time.deltaTime;
+            while (timeSinceLastUpdate > updateInterval) {
+                timeSinceLastUpdate -= updateInterval;
+                instance.value += __instance.averagePain;
+                instance.deltatime += 1;
             }
         }
 
@@ -46,11 +46,6 @@ namespace BalaurBohemianBroken.StatTrackers {
             return value / deltatime;
         }
 
-        public void LoadToStatic() {
-            value_running = value;
-            deltatime_running = deltatime;
-        }
-
         // TODO: This reports back NAN
         public string GetValue(int decimal_place = -1) {
             float v = GetAveragePain();
@@ -60,13 +55,12 @@ namespace BalaurBohemianBroken.StatTrackers {
             return v.ToString(CultureInfo.InvariantCulture);
         }
 
-        protected void LoadFromStatic() {
-            value = value_running;
-            deltatime = deltatime_running;
+        public void Reset() {
+            value = 0;
+            deltatime = 0;
         }
         
         public string Serialize() {
-            LoadFromStatic();
             try {
                 Dictionary<string, string> data = new Dictionary<string, string>() {
                     {"value", JsonConvert.SerializeObject(value)},

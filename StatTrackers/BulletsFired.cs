@@ -13,15 +13,14 @@ namespace BalaurBohemianBroken.StatTrackers {
         public override int priority => 0;
 
         private int noteworthy_threshold = 30;
-        private List<string> _notes = new List<string>() {
+        private List<string> _notes = new() {
             "Did we train them on this? No."
         };
-        protected override List<string> notes => _notes;
         
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GunScript), nameof(GunScript.Fire))]
         public static void Patch() {
-            value_running += 1;
+            instance.value += 1;
         }
 
         public override bool IsNoteworthy() {

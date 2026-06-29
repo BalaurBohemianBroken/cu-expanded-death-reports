@@ -7,23 +7,24 @@ using System.Reflection;
 namespace BalaurBohemianBroken.StatTrackers {
     [HarmonyPatch]
     public class Infections : StatGeneric<int> {
+        private static Infections instanceCasted => (Infections)instance;
         public override string name => "Infections";
         public override int priority => 0;
-        private static Dictionary<Limb, bool> _infection_last_check =  new Dictionary<Limb, bool>();
-        
-        
-        private List<string> _notes = new List<string>() {
-        };
-        protected override List<string> notes => _notes;
+        public Dictionary<Limb, bool> infectionLastCheck = new();
         
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Limb), nameof(Limb.Update))]
         public static void PatchUpdate(Limb __instance) {
             if (!ExpandedDeathReports.IsMainBody(__instance.body))
                 return;
-            if (_infection_last_check.GetValueOrDefault(__instance, false) && __instance.infected)
-                value_running += 1;
-            _infection_last_check[__instance] = __instance.infected;
+            if (instanceCasted.infectionLastCheck.GetValueOrDefault(__instance, false) && __instance.infected)
+                instance.value += 1;
+            instanceCasted.infectionLastCheck[__instance] = __instance.infected;
+        }
+
+        public override void Reset() {
+            value = 0;
+            instanceCasted.infectionLastCheck = new Dictionary<Limb, bool>();
         }
 
         public override bool IsNoteworthy() {

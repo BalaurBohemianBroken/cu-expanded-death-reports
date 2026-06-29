@@ -18,8 +18,8 @@ namespace BalaurBohemianBroken {
     public class ExpandedDeathReports : BaseUnityPlugin {
         public static ManualLogSource logger;
         // Based on the game's SaveSystem.SaveGame function.
-        public static string save_path_stats = Application.persistentDataPath + "\\death_reports.yip";
-        public static string save_path_ongoing = Application.persistentDataPath + "\\ongoing_run.yip";
+        public static string savePathStats = Application.persistentDataPath + "\\death_reports.yip";
+        public static string savePathOngoing = Application.persistentDataPath + "\\ongoing_run.yip";
 
         public static Dictionary<string, IStat> StatTrackersBoring { get; private set; } = new Dictionary<string, IStat>();
         public static Dictionary<string, IStat> StatTrackersSpecial { get; private set; } = new Dictionary<string, IStat>();
@@ -83,22 +83,21 @@ namespace BalaurBohemianBroken {
                 stat_data[kvp.Key] = kvp.Value.Serialize();
             }
             string save_data = JsonConvert.SerializeObject(stat_data, Formatting.None, new JsonSerializerSettings());
-            File.WriteAllBytes(save_path_ongoing, SaveSystem.Zip(save_data));
+            File.WriteAllBytes(savePathOngoing, SaveSystem.Zip(save_data));
         }
 
         public void LoadRunning() {
-            if (!File.Exists(save_path_ongoing)) {
+            if (!File.Exists(savePathOngoing)) {
                 return;
             }
 
-            string raw_data = SaveSystem.Unzip(File.ReadAllBytes(save_path_ongoing));
+            string raw_data = SaveSystem.Unzip(File.ReadAllBytes(savePathOngoing));
             Dictionary<string, string> saved_data = JsonConvert.DeserializeObject<Dictionary<string, string>>(raw_data);
             
             foreach (KeyValuePair<string, IStat> kvp in StatTrackersAll) {
                 // TODO: Some kind of logging here for when a key isn't found. Probably just warning.
                 if (saved_data.TryGetValue(kvp.Key, out string object_data)) {
                     kvp.Value.Deserialize(object_data);
-                    kvp.Value.LoadToStatic();
                 }
             }
         }

@@ -10,16 +10,17 @@ namespace BalaurBohemianBroken {
     // This is both a limitation of interfaces, and sort of a feature in that stats can be disabled.
     // Instances of the class can also be used just to store data, though, as is the case on the history screen.
     public abstract class StatGeneric<T> : IStat {
+        protected static StatGeneric<T> instance;
+        public virtual IStat runningInstance {
+            get => instance;
+            set => instance = (StatGeneric<T>)value;
+        }
         public abstract string name { get; }
         public abstract int priority { get; }
         
-        protected static T value_running { get; set; } // A value that increments during runs.
-        public T value { get; protected set; }
+        public T value { get; set; }
 
-        protected abstract List<string> notes { get; }
-        
         public virtual string Serialize() {
-            LoadFromStatic();
             try {
                 return JsonConvert.SerializeObject(value);
             }
@@ -38,21 +39,12 @@ namespace BalaurBohemianBroken {
                 throw;
             }
         }
-        
-        protected virtual void LoadFromStatic() {
-            value = value_running;
-        }
 
-        public virtual void LoadToStatic() {
-            value_running = value;
+        public virtual void Reset() {
+            value = default;
         }
 
         public abstract bool IsNoteworthy();
-
-        public static void Reset() {
-            // I'm not defaulting value because I currently use this only to store previous runs. No reason to default it.
-            value_running = default;
-        }
 
         public string GetValue(int decimal_place = -1) {
             if (decimal_place > -1) {

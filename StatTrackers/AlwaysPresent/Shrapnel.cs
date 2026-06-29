@@ -7,25 +7,27 @@ using System.Reflection;
 namespace BalaurBohemianBroken.StatTrackers {
     [HarmonyPatch]
     public class Shrapnel : StatGeneric<int> {
+        private static Shrapnel instanceCasted => (Shrapnel)instance;
         public override string name => "Shrapnel";
         public override int priority => 0;
         
-        private List<string> _notes = new List<string>() {
-        };
-        protected override List<string> notes => _notes;
-        
-        private static Dictionary<Limb, int> shrapnel_last_frame = new Dictionary<Limb, int>();
+        private Dictionary<Limb, int> shrapnelLastFrame = new();
         
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Limb), nameof(Limb.Update))]
         public static void PatchUpdate(Limb __instance) {
             if (!ExpandedDeathReports.IsMainBody(__instance.body))
                 return;
-            int last_shrapnel = shrapnel_last_frame.GetValueOrDefault(__instance, 0);
+            int last_shrapnel = instanceCasted.shrapnelLastFrame.GetValueOrDefault(__instance, 0);
             if (__instance.shrapnel > last_shrapnel) {
-                value_running += __instance.shrapnel - last_shrapnel;
+                instance.value += __instance.shrapnel - last_shrapnel;
             }
-            shrapnel_last_frame[__instance] = last_shrapnel;
+            instanceCasted.shrapnelLastFrame[__instance] = last_shrapnel;
+        }
+
+        public override void Reset() {
+            value = 0;
+            instanceCasted.shrapnelLastFrame = new Dictionary<Limb, int>();
         }
 
         public override bool IsNoteworthy() {

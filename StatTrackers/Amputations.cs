@@ -14,7 +14,6 @@ namespace BalaurBohemianBroken.StatTrackers {
             "Impressive. How might we teach this survival behaviour?",
             "What the fuck are we doing?\nResearch.",
         };
-        protected override List<string> notes => _notes;
         
         [HarmonyPostfix]
         [HarmonyPatch(typeof(AmputationMinigame), nameof(AmputationMinigame.Update))]
@@ -22,7 +21,7 @@ namespace BalaurBohemianBroken.StatTrackers {
             if (!ExpandedDeathReports.IsMainBody(__instance.limb.body))
                 return;
             if (__instance.cutProgress >= 1) {
-                value_running += 1;
+                instance.value += 1;
             }
         }
 
