@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BalaurBohemianBroken.Stats;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -7,32 +8,6 @@ using Object = UnityEngine.Object;
 namespace BalaurBohemianBroken;
 
 public class DeathReport {
-    // Report layout
-    // MSN-CARGO DETAILED STATUS REPORT #run_num
-    // date
-    // UNRESOLVED
-    //
-    // specimen_id   name
-    // MENTALS: mental_state
-    // RESULTS: depth M, LAYER layer, timespan  
-    // 
-    // CONSUMPTION: calories KCAL, fluids_consumed ML
-    // QUALITIES: int INT, str STR, res RES
-    // 
-    // PAIN UNITS: pain_suffered
-    // FRACTURES: bones_fractured
-    // CUTS/SHRAPNEL/INFECTIONS: opened_cuts/shrapnel/infections
-    // DAMAGE RECEIVED/RECOVERED: injuries_received/injuries_recovered
-    // 
-    // FURTHER NOTES
-    // 
-    //
-    // 
-    // 
-    //
-    // 
-    // 
-    
     // Special fields:
     // internal bleeding
     // THINGS CREATED: created
@@ -57,9 +32,9 @@ public class DeathReport {
     // I don't recall this being part of their briefing.
     // KILLS: creatures_killed
     // DESTRUCTION: things_destroyed
+    // Self harm performed.
     
     // Special behaviours:
-    // Self harm performed.
     // Operator received a phone call. Experiment ended prematurely.
     // Operator decided experiment was a __failure__. Experiment ended prematurely.
     // Operator decided to end shift early. Experiment ended prematurely.
@@ -78,7 +53,7 @@ public class DeathReport {
     // Subject progressed with significant efficiency, yet showed insufficient results. S., both extremes of fear conditioning are statistically ineffective.
     // Subject consumed a light bulb. We have agreed to accept this as an accident. A repeat would be most concerning.
     // A second subject has consumed a light bulb. We may need to analyse their generic palette. Possibly mutated.
-    // A third subject has consumed a light bulb. Tests have shown they do not prefer the taste of glass or bulb related materials to dog food. Further study needed.
+    // A third subject has consumed a light bulb. Tests have shown they do not prefer the taste of glass or bulb related materials to generic dog food. Further study needed.
     // A fourth subject has consumed a light bulb. Recommendations were suggested to teach them to place the small part in their mouth instead. However, we are not wasting resources on this.
     // Subjects continue to consume light bulbs at an alarming rate. This goes against basic survival instinct and calls into question our neural sequencing. Recommended we do not record this further.
     
@@ -126,8 +101,8 @@ public class DeathReport {
 	private static float lineShrinkage = 30; 
     private static float fontMult = 0.6f;
     private static string variableColor = "#5f1717";
-    private static string sColor = "#000000"; //"#1d7587";
-    private static string halColor = "#5e162d";
+    private static string sColor = "#00414f";
+    private static string halColor = "#4f0041";
     private static string finskyColor = "#5e3616";
     private static int specialStatStartLine = 13;
     private static int specialStatEndLine = 19;
@@ -213,25 +188,24 @@ public class DeathReport {
     private void FillHeaders() {
         var title = deathStats.GetChild(0).GetComponent<TextMeshProUGUI>();
         title.richText = true;
-        title.text = Locale.GetOther("endscreenstatus") + $"#{ColorVar(Stat("DeathIndex"))}";
+        title.text = Locale.GetOther("endscreenstatus") + $"#{Stat("DeathIndex")}";
         deathStats.GetChild(1).GetComponent<TextMeshProUGUI>().text = Stat("EndDate");
         deathStats.GetChild(2).GetComponent<TextMeshProUGUI>().text = Locale.GetOther("endscreenunresolved");
     }
 
     private void FillBoringStats() {
-        // TODO: Age.
         linesL[0].text = Stat("SpecimenID");
-        linesR[0].text = $"<align=\"right\">{ColorS(Stat("HumanName"))}</align>";
-        // TODO: Move stat field names to their classes?
-        linesL[1].text = "MENTALS: " + ColorVar(Stat("MentalState"));
-        linesL[2].text = $"RESULTS: {ColorVar(Stat("LayerDepth"))}, {ColorVar(Stat("LayerNumber"))}, IN {ColorVar(Stat("RunTime"))}";
+        linesR[0].text = $"<align=\"right\">{Stat("Name")}";
+        Object.Instantiate(linesR[0], linesR[0].transform.parent).GetComponent<TextMeshProUGUI>().SetText($"<align=\"center\">AGE: {Stat("Age")}");
+        linesL[1].text = "MENTALS: " + Stat("MentalState");
+        linesL[2].text = $"RESULTS: {Stat("LayerDepth")}, {Stat("LayerNumber")}, IN {Stat("RunTime")}";
         // linesL[3]
-        linesL[4].text = $"CONSUMPTION: {ColorVar(Stat("CaloriesConsumed"))}, {ColorVar(Stat("FluidsConsumed"))}";
-        linesL[5].text = $"QUALITIES: {ColorVar(Stat("Strength"))}, {ColorVar(Stat("Resilience"))}, {ColorVar(Stat("Intelligence"))}";
+        linesL[4].text = $"CONSUMPTION: {Stat("CaloriesConsumed")}, {Stat("FluidsConsumed")}";
+        linesL[5].text = $"QUALITIES: {Stat("Strength")}, {Stat("Resilience")}, {Stat("Intelligence")}";
         // linesL[6]
-        linesL[7].text = $"PAIN AVERAGE: {ColorVar(Stat("PainSufferedAverage"))}";
-        linesL[8].text = $"FRACTURES: {ColorVar(Stat("BonesFractured"))}";
-        linesL[9].text = $"CUTS/SHRAPNEL/INFECTIONS: {ColorVar(Stat("CutsOpened"))}/{ColorVar(Stat("Shrapnel"))}/{ColorVar(Stat("Infections"))}";
+        linesL[7].text = $"PAIN AVERAGE: {Stat("PainSufferedAverage")}";
+        linesL[8].text = $"FRACTURES: {Stat("BonesFractured")}";
+        linesL[9].text = $"CUTS/SHRAPNEL/INFECTIONS: {Stat("CutsOpened")}/{Stat("Shrapnel")}/{Stat("Infections")}";
         // lines_l[10].text = $"DAMAGE RECEIVED/RECOVERED: {ColorVar(523)}/{ColorVar(402)}";  // TODO: This.
         // lines[11]
         linesL[12].SetText($"<align=\"center\"><b>FURTHER NOTES</b>");
@@ -253,47 +227,49 @@ public class DeathReport {
 
         int line_index = specialStatStartLine;
         while (line_index <= specialStatEndLine && candidates.Count > 0) {
-            ExpandedDeathReports.logger.LogMessage(line_index);
             int index = ExpandedDeathReports.GetRandomWeightedIndex(weights, total_weight);
             IStat candidate = candidates[index];
             candidates.RemoveAt(index);
             weights.RemoveAt(index);
             // TODO: Try for note.
-            // TODO: Add fieldName variable.
-            ExpandedDeathReports.logger.LogMessage(candidate.GetStatReadout());
-            linesL[line_index].text = $"{candidate.GetStatReadout()}";
+            // TODO: This will error on line 17 and 19 becaus they are null :)
+            linesL[line_index].text = $"{candidate.fieldName}{Stat(candidate)}";
             line_index++;
         }
     }
-    
-    private string Stat(string stat_name) {
+
+    private string Stat(string stat_name, bool use_color = true) {
         if (!statsAll.TryGetValue(stat_name, out IStat stat)) {
             ExpandedDeathReports.logger.LogError($"Failed to get stat for death report: {stat_name}");
             return "ERR";
         }
 
+        return Stat(stat, use_color);
+    }
+
+    private string Stat(IStat stat, bool use_color = true) {
         try {
-            return stat.GetStatReadout();
+            return stat.GetStatReadout(use_color);
         }
         catch (Exception ex) {
-            ExpandedDeathReports.logger.LogError($"Failed on GetStatReadout for stat: {stat_name}\nException: {ex}");
+            ExpandedDeathReports.logger.LogError($"Failed on GetStatReadout for stat: {stat.name}\nException: {ex}");
             return "ERR";
         }
     }
     
-    private static string ColorVar(object variable) {
+    public static string ColorVar(object variable) {
         return $"<color={variableColor}>{variable}</color>";
     }
 
-    private static string ColorS(object note) {
+    public static string ColorS(object note) {
         return $"<color={sColor}>{note}</color>";
     }
 
-    private static string ColorHal(object note) {
+    public static string ColorHal(object note) {
         return $"<color={halColor}>{note}</color>";
     }
 
-    private static string ColorFinsky(object note) {
+    public static string ColorFinsky(object note) {
         return $"<color={finskyColor}>{note}</color>";
     }
 }

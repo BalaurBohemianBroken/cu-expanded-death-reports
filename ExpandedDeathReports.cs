@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using BalaurBohemianBroken.StatTrackers;
+using BalaurBohemianBroken.Stats;
 using UnityEngine;
 using BepInEx;
 using BepInEx.Logging;
@@ -13,6 +13,8 @@ using Newtonsoft.Json;
 // TODO: Option to remove old reports, "burn" them
 // TODO: Post-it notes for the 'special' report features.
 // TODO: Add support for multiple save locations. See how Jimmy modifies it.
+// TODO: Second page for major notes.
+// TODO: Cause of death?
 namespace BalaurBohemianBroken {
     [BepInPlugin("yip.balaur.ExpandedDeathReports", "ExpandedDeathReports", "1.0.0")]
     public class ExpandedDeathReports : BaseUnityPlugin {
