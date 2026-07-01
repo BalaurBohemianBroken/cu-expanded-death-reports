@@ -112,17 +112,26 @@ public class DeathReport {
     // Consistent ones that appear on the main menu. We don't check these for if they should appear
     // in the special stats section.
     HashSet<string> statsBoringNames = new() {
+        "Age",
         "BonesFractured",
+        "CaloriesConsumed",
+        "CutsOpened",
+        "DeathIndex",
         "Dislocations",
+        "EndDate",
         "FluidsConsumed",
         "Infections",
-        "PainSufferedAverage",
-        "Strength",
         "Intelligence",
-        "Resilience",
         "LayerDepth",
-        "CutsOpened",
+        "LayerNumber",
+        "MentalState",
+        "Name",
+        "PainSufferedAverage",
+        "Resilience",
+        "RunTime",
         "Shrapnel",
+        "SpecimenID",
+        "Strength",
     };
     
     // TODO: Couple notes for if you have no further notes.
@@ -232,6 +241,7 @@ public class DeathReport {
         while (line_index <= specialStatEndLine && candidates.Count > 0) {
             int index = ExpandedDeathReports.GetRandomWeightedIndex(weights, total_weight);
             IStat candidate = candidates[index];
+            total_weight -= weights[index];
             candidates.RemoveAt(index);
             weights.RemoveAt(index);
             // TODO: Try for note.
