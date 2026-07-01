@@ -4,8 +4,7 @@ using Newtonsoft.Json;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class CaloriesConsumed : IStat {
-        public string name => "CaloriesConsumed";
-        public int priority => 0;
+        public string name => GetType().Name;
         public string fieldName => "CALORIES: ";
 
         private int valueRunning => PlayerCamera.main?.caloriesConsumed ?? 0;

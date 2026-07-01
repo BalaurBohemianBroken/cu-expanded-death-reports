@@ -6,7 +6,7 @@ using UnityEngine;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class MentalState : IStat {
-        public string name => "MentalState";
+        public string name => GetType().Name;
         public string fieldName => "MENTALS: ";
         public int priority => 0;
         

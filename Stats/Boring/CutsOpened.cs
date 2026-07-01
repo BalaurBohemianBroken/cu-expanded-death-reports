@@ -4,7 +4,6 @@ using HarmonyLib;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class CutsOpened : StatGeneric<int> {
-        public override string name => "CutsOpened";
         public override string fieldName => "CUTS OPENED: ";
         
         private Dictionary<Limb, bool> wasCutLastFrame = new();

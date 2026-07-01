@@ -5,7 +5,6 @@ namespace BalaurBohemianBroken.Stats;
 
 [HarmonyPatch]
 public class BulletsFired : StatGeneric<int> {
-    public override string name => "BulletsFired";
     public override string fieldName => "SHOTS FIRED: ";
 
     private int noteworthy_threshold = 30;

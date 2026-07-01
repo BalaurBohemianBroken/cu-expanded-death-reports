@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class RunTime : IStat {
-        public string name => "RunTime";
+        public string name => GetType().Name;
         public string fieldName => "DESCENT DURATION: ";
 
         private string valueRunning => TimeSpan.FromSeconds(WorldGeneration.TotalRunTime()).ToString("hh\\:mm\\:ss");

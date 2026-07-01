@@ -9,7 +9,7 @@ namespace BalaurBohemianBroken.Stats {
     // Because this one has a bunch of custom behaviour I've opted to not make it StatGeneric.
     [HarmonyPatch]
     public class PainSufferedAverage : IStat {
-        public string name => "PainSufferedAverage";
+        public string name => GetType().Name;
         public string fieldName => "PAIN AVG:";
         
         private float value = 0;

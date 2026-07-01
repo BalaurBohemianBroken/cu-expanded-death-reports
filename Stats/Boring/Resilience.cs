@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class Resilience : IStat { 
-        public string name => "Resilience";
+        public string name => GetType().Name;
         public string fieldName => "RESILIENCE: ";
 
         public int valueRunning => PlayerCamera.main?.body?.skills?.RES ?? 0;

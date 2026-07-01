@@ -3,7 +3,6 @@ using HarmonyLib;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class BonesFractured : StatGeneric<int> {
-        public override string name => "BonesFractured";
         public override string fieldName => "FRACTURES: ";
 
         [HarmonyPrefix]

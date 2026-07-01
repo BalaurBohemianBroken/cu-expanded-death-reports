@@ -1,11 +1,9 @@
 using HarmonyLib;
 using System.Collections.Generic;
-using BalaurBohemianBroken.Stats;
 
-namespace BalaurBohemianBroken;
+namespace BalaurBohemianBroken.Stats;
 [HarmonyPatch]
 public class Amputations : StatGeneric<int> {
-    public override string name => "Amputations";
     public override string fieldName => "AMPUTATIONS: ";
 
     private List<string> _notes = new List<string>() {

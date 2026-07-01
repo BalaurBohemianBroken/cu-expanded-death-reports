@@ -4,7 +4,6 @@ using System.Collections.Generic;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class Name : StatGeneric<string> {
-        public override string name => "Name";
         public override string fieldName => "NAME: ";
 
         private static List<string> humanNames = new() {
@@ -76,6 +75,7 @@ namespace BalaurBohemianBroken.Stats {
             "Light",
             "Riku",
             "Pika",
+            "Pidge",
             "Penny",
             "Pearl",
             "sorry.",

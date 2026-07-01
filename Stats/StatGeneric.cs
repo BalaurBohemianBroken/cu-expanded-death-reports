@@ -10,7 +10,7 @@ namespace BalaurBohemianBroken.Stats;
 // This is both a limitation of interfaces, and sort of a feature in that stats can be disabled.
 // Instances of the class can also be used just to store data, though, as is the case on the history screen.
 public abstract class StatGeneric<T> : IStat {
-    public abstract string name { get; }
+    public virtual string name => GetType().Name;
     public abstract string fieldName { get; }
         
     public T value { get; set; }

@@ -3,7 +3,6 @@ using HarmonyLib;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class Dislocations : StatGeneric<int> {
-        public override string name => "Dislocations";
         public override string fieldName => "DISLOCATIONS: ";
         
         [HarmonyPostfix]

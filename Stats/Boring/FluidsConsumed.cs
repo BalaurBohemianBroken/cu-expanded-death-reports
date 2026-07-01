@@ -6,7 +6,6 @@ using UnityEngine;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class FluidsConsumed : StatGeneric<float> {
-        public override string name => "FluidsConsumed";
         public override string fieldName => "FLUIDS: ";
 
         // Because I can't just patch onDrink, as it is a delegate method, I try to intercept it at an earlier point.

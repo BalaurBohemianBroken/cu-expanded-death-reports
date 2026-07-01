@@ -6,7 +6,6 @@ namespace BalaurBohemianBroken.Stats;
 
 [HarmonyPatch]
 public class HugsGiven : StatGeneric<int> {
-    public override string name => "HugsGiven";
     public override string fieldName => "HUGS: ";
 
     private List<string> notes = new() {

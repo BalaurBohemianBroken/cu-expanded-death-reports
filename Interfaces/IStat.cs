@@ -10,7 +10,7 @@ public interface IStat : ISerializable {
         return (T)runningRegister[typeof(T)];
     }
     
-    public string name { get; }
+    public string name => GetType().ToString();
     public string fieldName { get; }
 
     // Noteworthiness guide:

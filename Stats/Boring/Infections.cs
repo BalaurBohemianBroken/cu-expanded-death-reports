@@ -4,7 +4,6 @@ using HarmonyLib;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class Infections : StatGeneric<int> {
-        public override string name => "Infections";
         public override string fieldName => "INFECTIONS: ";
         private Dictionary<Limb, bool> infectionLastCheck = new();
 

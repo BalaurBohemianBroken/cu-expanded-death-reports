@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class SpecimenID : IStat {
-        public string name => "SpecimenID";
+        public string name => GetType().Name;
         public string fieldName => "ID: ";
 
         private int valueRunning => WoundView.specimenId;

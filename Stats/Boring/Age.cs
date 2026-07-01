@@ -5,7 +5,7 @@ namespace BalaurBohemianBroken.Stats;
 
 [HarmonyPatch]
 public class Age : IStat {
-    public string name => GetType().ToString();
+    public string name => GetType().Name;
     public string fieldName => "AGE: ";
 
     private int valueRunning => WoundView.view.cInfo[1];

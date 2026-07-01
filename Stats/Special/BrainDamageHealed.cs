@@ -5,7 +5,6 @@ namespace BalaurBohemianBroken.Stats;
 
 [HarmonyPatch]
 public class BrainDamageHealed : StatGeneric<float> {
-    public override string name => GetType().ToString();
     public override string fieldName => "HEALED (BRAIN): ";
     private float last_brain_health = -1;
     

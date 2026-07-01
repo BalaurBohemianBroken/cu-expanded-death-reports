@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class LayerNumber : IStat {
-        public string name => "LayerNumber";
+        public string name => GetType().Name;
         public string fieldName => "LAYER: ";
 
         private int valueRunning => WorldGeneration.world?.biomeDepth ?? 0;

@@ -4,7 +4,6 @@ using HarmonyLib;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class Shrapnel : StatGeneric<int> {
-        public override string name => "Shrapnel";
         public override string fieldName => "SHRAPNEL: ";
 
         private Dictionary<Limb, int> shrapnelLastFrame = new();
