@@ -13,8 +13,12 @@ using Newtonsoft.Json;
 // TODO: Option to remove old reports, "burn" them
 // TODO: Post-it notes for the 'special' report features.
 // TODO: Add support for multiple save locations. See how Jimmy modifies it.
-// TODO: Second page for major notes.
 // TODO: Cause of death?
+
+// TODO: Saving and loading of reports.
+// TODO: Print a second report if there are extended notes. Move first report to middle of screen on receipt rip.
+// TODO: Add more stats.
+// TODO: Menu page for viewing old runs.
 namespace BalaurBohemianBroken {
     [BepInPlugin("yip.balaur.ExpandedDeathReports", "ExpandedDeathReports", "1.0.0")]
     public class ExpandedDeathReports : BaseUnityPlugin {

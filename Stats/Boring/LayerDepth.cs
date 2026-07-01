@@ -21,6 +21,7 @@ namespace BalaurBohemianBroken.Stats {
         }
 
         public string GetStatReadout(bool color) {
+            // TODO: This doesn't seem to work. I might be better off just tracking this myself.
             string s;
             if (this == instance)
                 s = valueRunning.ToString();

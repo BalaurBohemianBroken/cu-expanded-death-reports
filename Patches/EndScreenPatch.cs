@@ -1,6 +1,7 @@
 using System.Collections;
 using BalaurBohemianBroken.Stats;
 using HarmonyLib;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -25,11 +26,31 @@ namespace BalaurBohemianBroken.Patches {
 				SetEndBackground(__instance);
                 reportInstance = new DeathReport(__instance.deathStats.gameObject, ExpandedDeathReports.StatTrackersAll);
                 
-				float timer = 3.5f;
+                // TODO: Set up copy to clipboard button.
+                // Get the two menu buttons off of the original death report, and put them somewhere more convenient.
+                // These magic numbers were just gleamed from trial and error. I didn't divine any deeper meaning to them.
+                float y_pos = -500f;
+                float x_shrinkage = 150;
+                var return_button = Object.Instantiate(__instance.deathStats.GetChild(14), __instance.deathStats.parent).GetComponent<RectTransform>();
+                return_button.anchoredPosition = new Vector2(0f, y_pos);
+                // Resize so the button doesn't extend way past its text bounds.
+                Vector2 omin = return_button.offsetMin;
+                Vector2 omax = return_button.offsetMax;
+                omin.x += x_shrinkage;
+                omax.x -= x_shrinkage;
+                return_button.offsetMin = omin;
+                return_button.offsetMax = omax;
+                // Recolor the text so it is visible on the dark background.
+                return_button.GetComponent<TextMeshProUGUI>().text = DeathReport.ColorHal("<u>RETURN TO MENU</u>");
+                
+                // Delay to print. Reduced from 3.5
+				float timer = 1f;
 				while (timer > 0.0f) {
 				  timer -= Time.unscaledDeltaTime * 1.5f;
 				  yield return null;
 				}
+				
+				// Print
 				Vector2 origPos = new Vector2(-336f, -1000f);
 				Vector2 newPos = new Vector2(-336f, -934f);
 				Sound.Play("receiptPrint", Vector2.zero, true, false, volume: 0.5f, noReverb: true, ignoreMixer: true);
@@ -42,6 +63,8 @@ namespace BalaurBohemianBroken.Patches {
                 reportInstance.deathStats.anchoredPosition = newPos;
 				bool clicked = false;
                 reportInstance.deathStats.GetComponent<Button>().onClick.AddListener((UnityAction) (() => clicked = true));
+                
+                // Move to view.
 				while (!clicked)
 					yield return null;
 				Sound.Play("receiptRip", Vector2.zero, true, false, volume: 0.5f, noReverb: true, ignoreMixer: true);

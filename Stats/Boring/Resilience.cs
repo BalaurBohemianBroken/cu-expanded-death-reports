@@ -37,7 +37,7 @@ namespace BalaurBohemianBroken.Stats {
                 s = valueStored.ToString();
             if (color)
                 s = DeathReport.ColorVar(s);
-            return s;
+            return s + " RES";
         }
 
         public void Reset() {

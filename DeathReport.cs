@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BalaurBohemianBroken.Stats;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace BalaurBohemianBroken;
@@ -123,6 +124,8 @@ public class DeathReport {
         "Shrapnel",
     };
     
+    // TODO: Couple notes for if you have no further notes.
+    
     public DeathReport(GameObject death_stats_prefab, Dictionary<string, IStat> stats) {
         deathStats = Object.Instantiate(death_stats_prefab, death_stats_prefab.transform.parent).GetComponent<RectTransform>();
         PrepareTextFields();
@@ -134,7 +137,13 @@ public class DeathReport {
     
     private void PrepareTextFields() {
         TextMeshProUGUI first_line = deathStats.GetChild(3).GetComponent<TextMeshProUGUI>();
-				
+        
+        // Remove buttons.
+        Button return_button = deathStats.GetChild(14).GetComponent<Button>();
+        Button copy_to_clipboard_button = deathStats.GetChild(15).GetComponent<Button>();
+        Object.Destroy(return_button.gameObject);
+        Object.Destroy(copy_to_clipboard_button.gameObject);
+        
         // Clear existing text objects
         for (int i = 4; i < 14; i++) {
             Object.Destroy(deathStats.GetChild(i).gameObject);
@@ -164,13 +173,6 @@ public class DeathReport {
             obj = Object.Instantiate(obj, obj.parent);
             linesR.Add(obj.GetComponent<TextMeshProUGUI>());
         }
-
-        // Clear out space for the functional buttons at the bottom of the page.
-        // TODO: Find a better solution in the future. Probably move the buttons elsewhere.
-        Object.Destroy(linesL[19]);
-        Object.Destroy(linesL[17]);
-        Object.Destroy(linesR[19]);
-        Object.Destroy(linesR[17]);
     }
     
     private void SplitStats(Dictionary<string, IStat> all_stats) {
