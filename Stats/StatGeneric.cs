@@ -45,6 +45,7 @@ public abstract class StatGeneric<T> : IStat {
         value = default;
     }
 
+    // TODO: logic for this which reduces how noteworthy something is if it's in a previous report.
     public abstract float Noteworthiness();
 
     public virtual string GetStatReadout(bool color) {

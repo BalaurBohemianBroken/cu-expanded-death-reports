@@ -107,6 +107,7 @@ public class DeathReport {
     private static string finskyColor = "#5e3616";
     private static int specialStatStartLine = 13;
     private static int specialStatEndLine = 19;
+    private static float minimumNoteworthiness = 1;
     
     // Consistent ones that appear on the main menu. We don't check these for if they should appear
     // in the special stats section.
@@ -220,7 +221,7 @@ public class DeathReport {
         // TODO: Command to print current noteworthiness
         foreach (IStat stat in statsSpecial.Values) {
             float weight = stat.Noteworthiness();
-            if (weight <= 0)
+            if (weight < minimumNoteworthiness)
                 continue;
             total_weight += weight;
             candidates.Add(stat);
@@ -234,7 +235,6 @@ public class DeathReport {
             candidates.RemoveAt(index);
             weights.RemoveAt(index);
             // TODO: Try for note.
-            // TODO: This will error on line 17 and 19 becaus they are null :)
             linesL[line_index].text = $"{candidate.fieldName}{Stat(candidate)}";
             line_index++;
         }
