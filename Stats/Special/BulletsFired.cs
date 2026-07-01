@@ -6,7 +6,6 @@ namespace BalaurBohemianBroken.Stats;
 [HarmonyPatch]
 public class BulletsFired : StatGeneric<int> {
     public override string name => "BulletsFired";
-    public override int priority => 0;
     public override string fieldName => "SHOTS FIRED: ";
 
     private int noteworthy_threshold = 30;
@@ -17,6 +16,7 @@ public class BulletsFired : StatGeneric<int> {
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GunScript), nameof(GunScript.Fire))]
     public static void Patch() {
+        var instance = IStat.Get<BulletsFired>();
         instance.value += 1;
     }
 

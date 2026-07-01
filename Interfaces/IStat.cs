@@ -1,15 +1,16 @@
+using System;
+using System.Collections.Generic;
+
 namespace BalaurBohemianBroken.Stats;
 
 public interface IStat : ISerializable {
-    // Should assign to a static variable that can be accessed from patches.
-    // This is the version of the IStat that is currently tracking data.
-    // I'd prefer this to be an abstract static to remove the middleman,
-    // but game's runtime doesn't allow it I don't think.
-    public IStat runningInstance { get; set; }
-    // TODO: delete this. supersceded by noteworthiness.
-    public int priority { get; }
+    // These are the instances of IStat that interact with patches.
+    public static Dictionary<Type, IStat> runningRegister = new();
+    public static T Get<T>() where T : IStat {
+        return (T)runningRegister[typeof(T)];
+    }
+    
     public string name { get; }
-    // TODO: What this field should be identified as on the report.
     public string fieldName { get; }
 
     // Noteworthiness guide:

@@ -9,29 +9,24 @@ namespace BalaurBohemianBroken.Stats {
     // Because this one has a bunch of custom behaviour I've opted to not make it StatGeneric.
     [HarmonyPatch]
     public class PainSufferedAverage : IStat {
-        private static PainSufferedAverage instance;
-        public IStat runningInstance {
-            get => instance;
-            set => instance = (PainSufferedAverage) value;
-        }
         public string name => "PainSufferedAverage";
         public string fieldName => "PAIN AVG:";
-        public int priority => 0;
         
         private float value = 0;
         private float deltatime = 0;
 
         private const float updateInterval = 1;
-        private static float timeSinceLastUpdate = 0;
+        private float timeSinceLastUpdate = 0;
         
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Body), nameof(Body.Update))]
         public static void PatchUpdate(Body __instance) {
+            var instance = IStat.Get<PainSufferedAverage>();
             if (!ExpandedDeathReports.IsMainBody(__instance))
                 return;
-            timeSinceLastUpdate += Time.deltaTime;
-            while (timeSinceLastUpdate > updateInterval) {
-                timeSinceLastUpdate -= updateInterval;
+            instance.timeSinceLastUpdate += Time.deltaTime;
+            while (instance.timeSinceLastUpdate > updateInterval) {
+                instance.timeSinceLastUpdate -= updateInterval;
                 instance.value += __instance.averagePain;
                 instance.deltatime += 1;
             }

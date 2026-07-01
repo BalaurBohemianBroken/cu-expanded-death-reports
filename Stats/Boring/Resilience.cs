@@ -5,13 +5,7 @@ using Newtonsoft.Json;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class Resilience : IStat { 
-        private static Resilience instance;
-        public IStat runningInstance {
-            get => instance;
-            set => instance = (Resilience)value;
-        }
         public string name => "Resilience";
-        public int priority => 0;
         public string fieldName => "RESILIENCE: ";
 
         public int valueRunning => PlayerCamera.main?.body?.skills?.RES ?? 0;
@@ -30,6 +24,7 @@ namespace BalaurBohemianBroken.Stats {
         }
 
         public string GetStatReadout(bool color) {
+            var instance = IStat.Get<Resilience>();
             string s;
             if (this == instance)
                 s = valueRunning.ToString();

@@ -5,7 +5,6 @@ namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class CaloriesConsumed : IStat {
         public string name => "CaloriesConsumed";
-        public IStat runningInstance { get; set; }
         public int priority => 0;
         public string fieldName => "CALORIES: ";
 

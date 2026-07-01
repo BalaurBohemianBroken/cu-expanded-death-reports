@@ -58,7 +58,9 @@ namespace BalaurBohemianBroken {
                 StatTrackerNames.Add(stat.name);
                 StatTrackersAll[stat.name] = stat;
 
-                stat.runningInstance = stat;
+                if (IStat.runningRegister.ContainsKey(stat.GetType()))
+                    logger.LogWarning($"Duplicate runningregister entry with type {stat.GetType()}");
+                IStat.runningRegister[stat.GetType()] = stat;
             }
         }
 

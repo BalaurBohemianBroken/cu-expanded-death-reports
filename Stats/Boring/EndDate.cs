@@ -6,8 +6,6 @@ namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class EndDate : IStat {
         public string name => "EndDate";
-        public IStat runningInstance { get; set; }
-        public int priority => 0;
         public string fieldName => "DATE: ";
 
         private string timeRunning => DateTime.Now.ToString("MM-dd-HH-mm-ss");

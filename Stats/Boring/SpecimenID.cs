@@ -5,8 +5,6 @@ namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class SpecimenID : IStat {
         public string name => "SpecimenID";
-        public IStat runningInstance { get; set; }
-        public int priority => 0;
         public string fieldName => "ID: ";
 
         private int valueRunning => WoundView.specimenId;

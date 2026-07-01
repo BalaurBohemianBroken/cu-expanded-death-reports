@@ -7,7 +7,6 @@ namespace BalaurBohemianBroken.Stats;
 [HarmonyPatch]
 public class HugsGiven : StatGeneric<int> {
     public override string name => "HugsGiven";
-    public override int priority => 0;
     public override string fieldName => "HUGS: ";
 
     private List<string> notes = new() {
@@ -31,8 +30,9 @@ public class HugsGiven : StatGeneric<int> {
     [HarmonyPostfix]
     [HarmonyPatch(typeof(TraderScript), nameof(TraderScript.TryHug))]
     public static void Patch(TraderScript __instance) {
+        var instance = IStat.Get<HugsGiven>();
         if (__instance.reputation < __instance.minHugReputation || __instance.body.dirtyness > 50f) {
-            ((HugsGiven)instance).hugs_failed += 1;
+            instance.hugs_failed += 1;
             return;
         }
 
@@ -43,8 +43,8 @@ public class HugsGiven : StatGeneric<int> {
         // }
 
         if (__instance.reputation < 30f) {
-            ((HugsGiven)instance).hugs_failed += 1;
-            ((HugsGiven)instance).hostile_from_hug = true;
+            instance.hugs_failed += 1;
+            instance.hostile_from_hug = true;
         }
     }
 

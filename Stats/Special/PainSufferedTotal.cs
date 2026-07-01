@@ -6,9 +6,6 @@ namespace BalaurBohemianBroken.Stats {
     public class PainSufferedTotal : StatGeneric<float> {
         public override string name => "PainSufferedTotal";
         public override string fieldName => "PAIN UNITS: ";
-        public override int priority => 0;
-
-        private static float noteworthyThreshold = 25;
         
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Body), nameof(Body.Update))]
@@ -17,12 +14,12 @@ namespace BalaurBohemianBroken.Stats {
             // But I'm hoping they use unity's builtin functions.
             if (!ExpandedDeathReports.IsMainBody(__instance))
                 return;
-            instance.value += CalculatePainUnits(__instance.averagePain, Time.deltaTime);
+            IStat.Get<PainSufferedTotal>().value += CalculatePainUnits(__instance.averagePain, Time.deltaTime);
         }
 
         public override float Noteworthiness() {
             // TODO: Scale with biome.
-            if (value >= noteworthyThreshold)
+            if (value >= 25)
                 return 1;
             return 0;
         }

@@ -7,7 +7,6 @@ namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class FluidsConsumed : StatGeneric<float> {
         public override string name => "FluidsConsumed";
-        public override int priority => 0;
         public override string fieldName => "FLUIDS: ";
 
         // Because I can't just patch onDrink, as it is a delegate method, I try to intercept it at an earlier point.
@@ -15,6 +14,7 @@ namespace BalaurBohemianBroken.Stats {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(WaterContainerItem), nameof(WaterContainerItem.Drink))]
         public static void PatchDrinkFromContainer(float amount, WaterContainerItem __instance) {
+            var instance = IStat.Get<FluidsConsumed>();
             instance.value += Mathf.Min(amount, __instance.CurrentTotal);
         }
 
@@ -23,6 +23,7 @@ namespace BalaurBohemianBroken.Stats {
         public static void PatchDrinkFromFloor(Vector2Int pos, Body body, FluidManager __instance) {
             if (!ExpandedDeathReports.IsMainBody(body))
                 return;
+            var instance = IStat.Get<FluidsConsumed>();
             int liquid_id = __instance.GetLiquid(pos.x, pos.y);
             bool has_filter_straw = body.HoldingItem(body.handSlot) && body.GetItem(body.handSlot).id == "filterstraw";
             if (liquid_id == 3 && has_filter_straw)

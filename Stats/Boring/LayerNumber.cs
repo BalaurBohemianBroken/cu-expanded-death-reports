@@ -4,13 +4,7 @@ using Newtonsoft.Json;
 namespace BalaurBohemianBroken.Stats {
     [HarmonyPatch]
     public class LayerNumber : IStat {
-        private static LayerNumber instance;
-        public IStat runningInstance {
-            get => instance;
-            set => instance = (LayerNumber)value;
-        }
         public string name => "LayerNumber";
-        public int priority => 0;
         public string fieldName => "LAYER: ";
 
         private int valueRunning => WorldGeneration.world?.biomeDepth ?? 0;
@@ -21,6 +15,7 @@ namespace BalaurBohemianBroken.Stats {
         }
 
         public string GetStatReadout(bool color) {
+            var instance = IStat.Get<LayerNumber>();
             string s;
             if (this == instance)
                 s = valueRunning.ToString();

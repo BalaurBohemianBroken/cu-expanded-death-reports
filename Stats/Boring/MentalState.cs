@@ -8,11 +8,6 @@ namespace BalaurBohemianBroken.Stats {
     public class MentalState : IStat {
         public string name => "MentalState";
         public string fieldName => "MENTALS: ";
-        private static MentalState instance;
-        public IStat runningInstance {
-            get => instance;
-            set => instance = (MentalState)value;
-        }
         public int priority => 0;
         
         private static int stateRunning {

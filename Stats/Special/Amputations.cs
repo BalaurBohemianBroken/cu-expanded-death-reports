@@ -5,8 +5,7 @@ using BalaurBohemianBroken.Stats;
 namespace BalaurBohemianBroken;
 [HarmonyPatch]
 public class Amputations : StatGeneric<int> {
-    public override string name => "CutLimbsOff";
-    public override int priority => 0;
+    public override string name => "Amputations";
     public override string fieldName => "AMPUTATIONS: ";
 
     private List<string> _notes = new List<string>() {
@@ -17,6 +16,7 @@ public class Amputations : StatGeneric<int> {
     [HarmonyPostfix]
     [HarmonyPatch(typeof(AmputationMinigame), nameof(AmputationMinigame.Update))]
     public static void PatchUpdate(AmputationMinigame __instance) {
+        var instance = IStat.Get<Amputations>();
         if (!ExpandedDeathReports.IsMainBody(__instance.limb.body))
             return;
         if (__instance.cutProgress >= 1) {
